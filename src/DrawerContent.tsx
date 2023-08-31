@@ -13,7 +13,11 @@ import {
   DrawerContentScrollView,
   useDrawerProgress,
 } from '@react-navigation/drawer';
-import { DrawerActions, NavigationState } from '@react-navigation/native';
+import {
+  DrawerActions,
+  NavigationState,
+  useNavigation,
+} from '@react-navigation/native';
 import Animated, {
   AnimatedStyleProp,
   interpolate,
@@ -35,17 +39,10 @@ interface DrawerItemProps extends DrawerScene {
 }
 
 const DRAWER_SCENES: DrawerScene[] = [
-  { label: 'Home', icon: 'home', routeKey: 'home' },
-  {
-    label: 'Help',
-    icon: AppImages.support_icon,
-    isAssetIcon: true,
-    routeKey: 'help',
-  },
-  { label: 'Feedback', icon: 'help', routeKey: 'feedback' },
-  { label: 'Invite Friend', icon: 'group', routeKey: 'invite_friend' },
-  { label: 'Rate the app', icon: 'share' },
-  { label: 'About Us', icon: 'info' },
+  { label: '진행/완료 리뷰', icon: 'home', routeKey: 'review_list' },
+  { label: '블로그 리뷰', icon: 'edit', routeKey: 'blog' },
+  { label: '영수증 리뷰', icon: 'edit', routeKey: 'receipt' },
+  { label: '공지사항', icon: 'list', routeKey: 'notice' },
 ];
 
 const getActiveRouteState = (
@@ -124,6 +121,7 @@ const DrawerItemRow: React.FC<
 };
 
 const DrawerContent: React.FC<DrawerContentComponentProps> = props => {
+  const navigation = useNavigation<any>();
   const window = useWindowDimensions();
   const rowWidth = (window.width * 0.75 * 80) / 100;
   const progress = useDrawerProgress();
@@ -161,7 +159,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = props => {
             source={AppImages.userImage}
           />
         </Animated.View>
-        <Text style={styles.userName}>Chris Hemsworth</Text>
+        <Text style={styles.userName}>NAME</Text>
       </View>
       <View style={styles.divider} />
 
@@ -177,7 +175,10 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = props => {
         ))}
       </DrawerContentScrollView>
 
-      <MyPressable style={styles.signOutBtnStyle}>
+      <MyPressable
+        style={styles.signOutBtnStyle}
+        onPress={() => navigation.navigate('Login')}
+      >
         <Text style={styles.signOutText}>Sign Out</Text>
         <Icon name="power-settings-new" size={20} color="red" />
       </MyPressable>

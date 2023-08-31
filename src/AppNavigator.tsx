@@ -4,22 +4,19 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
-  HomeScene,
   DrawerContent,
-  HelpScene,
   FeedbackScene,
+  HelpScene,
+  HomeScene,
   InviteFriendScene,
 } from '.';
 import { CourseInfoScreen, HomeDesignCourse } from './design_course';
 import { IntroductionAnimationScreen } from './introduction_animation';
 import HotelHomeScreen from './hotel_booking/HotelHomeScreen';
+import FlatListBasics from './pages/review/ReviewList';
+import LoginView from './pages/login/Login';
 
 const Drawer = createDrawerNavigator();
-/**
- * TODO:- Temporarily using r-nav-stack instead of r-nav-native-stack cause of following issue:
- * https://github.com/react-navigation/react-navigation/issues/10941
- * Replace with r-nav-native-stack, once this is fixed.
- */
 const Stack = createStackNavigator();
 // const Stack = createNativeStackNavigator();
 
@@ -34,21 +31,21 @@ const DrawerNavigator: React.FC = () => {
           backgroundColor: 'rgb(237, 240, 242, 0.5)',
         },
         sceneContainerStyle: styles.drawerSceneContainer,
-        drawerActiveBackgroundColor: '#5cbbff',
+        drawerActiveBackgroundColor: 'orange',
         drawerType: 'back',
         overlayColor: 'transparent',
         swipeEdgeWidth: window.width,
         headerShown: false,
+        swipeEnabled: false,
       }}
       drawerContent={props => <DrawerContent {...props} />}
-      // this is just to enable shadow/elevation style on drawer, as it fallback to JS drawer solution instead of native one (v6)
-      // as explained here:- https://github.com/react-navigation/react-navigation/issues/10946#issuecomment-1287082343
       detachInactiveScreens={false}
     >
-      <Drawer.Screen name="home" component={HomeScene} />
-      <Drawer.Screen name="help" component={HelpScene} />
-      <Drawer.Screen name="feedback" component={FeedbackScene} />
-      <Drawer.Screen name="invite_friend" component={InviteFriendScene} />
+      <Drawer.Screen name="review_list" component={FlatListBasics} />
+      <Drawer.Screen name="blog" component={InviteFriendScene} />
+      <Drawer.Screen name="receipt" component={HelpScene} />
+      <Drawer.Screen name="notice" component={FeedbackScene} />
+      <Drawer.Screen name="invite_friend" component={HomeScene} />
     </Drawer.Navigator>
   );
 };
@@ -63,6 +60,7 @@ export default () => {
       />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginView} />
         <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
 
         <Stack.Screen name="Hotel" component={HotelHomeScreen} />
