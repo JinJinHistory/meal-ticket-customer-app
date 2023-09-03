@@ -32,6 +32,9 @@ const AppImages = {
   care_image: require('./introduction_animation/care_image.png'),
   mood_dairy_image: require('./introduction_animation/mood_dairy_image.png'),
   welcome: require('./introduction_animation/welcome.png'),
+
+  // common
+  downArrow: require('./common/down-arrow.png'),
 };
 
 export { AppImages };

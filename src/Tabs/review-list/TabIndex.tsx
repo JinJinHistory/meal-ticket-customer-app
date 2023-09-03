@@ -2,8 +2,8 @@ import * as React from 'react';
 import { FlatList, useWindowDimensions, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { ONGOING_REVIEW_LIST, COMPLETED_REVIEW_LIST } from './model/reviewList';
-import CompletedItem from './CompletedItem';
-import OngoingItem from './OngoingItem';
+import CompletedItem from './completed-list/CompletedItem';
+import OngoingItem from './ongoing-list/OngoingItem';
 
 const OngoingRoute = () => (
   <FlatList

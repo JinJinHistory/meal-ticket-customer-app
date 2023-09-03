@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { EnumReviewState, OngoingType } from './model/reviewList';
+import { EnumReviewState, OngoingType } from '../model/reviewList';
 
 const OngoingItem = (params: OngoingType) => {
   return (
@@ -31,8 +31,8 @@ const OngoingItem = (params: OngoingType) => {
         </Text>
       </View>
       <View style={styles.contentBox}>
-        <Text style={{ fontSize: 12 }}>{params.title}</Text>
-        <Text style={{ fontSize: 10 }}>
+        <Text style={{ fontSize: 14 }}>{params.title}</Text>
+        <Text style={{ fontSize: 12 }}>
           리뷰생성일: {params.regDate?.toLocaleDateString()}
         </Text>
       </View>
@@ -44,6 +44,10 @@ const styles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     gap: 10,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 0.5,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
   },
   stateBox: {
     width: '30%',
@@ -54,7 +58,8 @@ const styles = StyleSheet.create({
   },
   stateText: {
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: 12,
+    color: '#333333',
   },
   contentBox: {
     paddingHorizontal: 5,

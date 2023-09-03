@@ -13,8 +13,9 @@ import {
 import { CourseInfoScreen, HomeDesignCourse } from './design_course';
 import { IntroductionAnimationScreen } from './introduction_animation';
 import HotelHomeScreen from './hotel_booking/HotelHomeScreen';
-import FlatListBasics from './pages/review/ReviewList';
+// import FlatListBasics from './Tabs/review/ReviewList';
 import LoginView from './pages/login/Login';
+import Tabs from './Tabs/Tabs';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -41,7 +42,7 @@ const DrawerNavigator: React.FC = () => {
       drawerContent={props => <DrawerContent {...props} />}
       detachInactiveScreens={false}
     >
-      <Drawer.Screen name="review_list" component={FlatListBasics} />
+      {/*<Drawer.Screen name="review_list" component={FlatListBasics} />*/}
       <Drawer.Screen name="blog" component={InviteFriendScene} />
       <Drawer.Screen name="receipt" component={HelpScene} />
       <Drawer.Screen name="notice" component={FeedbackScene} />
@@ -60,6 +61,7 @@ export default () => {
       />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Tabs" component={Tabs} />
         <Stack.Screen name="Login" component={LoginView} />
         <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
 

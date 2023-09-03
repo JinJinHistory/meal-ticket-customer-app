@@ -13,6 +13,38 @@ export interface CompletedType {
   state: EnumReviewState;
 }
 
+export interface ReviewListSearchType {
+  searchType: { key: number; name: string };
+  searchItems: { key: number; name: string }[];
+}
+
+export const ONGOING_REVIEW_LIST_SEARCH_TYPE_LIST: ReviewListSearchType[] = [
+  {
+    searchType: { key: 0, name: '조회기간' },
+    searchItems: [
+      { key: 0, name: '1개월' },
+      { key: 1, name: '3개월' },
+      { key: 2, name: '직접설정' },
+    ],
+  },
+  {
+    searchType: { key: 1, name: '상태' },
+    searchItems: [
+      { key: 0, name: '전체' },
+      { key: 1, name: '검수대기중' },
+      { key: 2, name: '미배정' },
+      { key: 3, name: '검수중' },
+    ],
+  },
+  {
+    searchType: { key: 2, name: '정렬' },
+    searchItems: [
+      { key: 0, name: '최신순' },
+      { key: 1, name: '과거순' },
+    ],
+  },
+];
+
 export enum EnumReviewState {
   // 최종완료
   FINAL_COMPLETE = '최종완료',
