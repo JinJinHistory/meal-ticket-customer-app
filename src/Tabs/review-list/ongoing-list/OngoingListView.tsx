@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   RefreshControl,
   ScrollView,
@@ -13,8 +14,6 @@ import {
   ONGOING_REVIEW_LIST,
   ONGOING_REVIEW_LIST_SEARCH_TYPE_LIST,
 } from '../model/reviewList';
-import commonSlice from '../../../redux/slices/common';
-import { useAppDispatch } from '../../../redux/store';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import OngoingItem from './OngoingItem';
 import {
@@ -23,11 +22,9 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import { AppImages } from '../../../assets';
+import { hideLoading, showLoading } from '../../../util/action';
 
 const OngoingListView = () => {
-  const dispatch = useAppDispatch();
-  // const navigation = useNavigation<any>();
-
   // search type title
   const [searchTypeTitle1, setSearchTypeTitle1] =
     React.useState<string>('1개월');
@@ -43,9 +40,9 @@ const OngoingListView = () => {
 
   // 검색 조건 선택 submit 이벤트
   const onClickSearchTypeSubmit = () => {
-    dispatch(commonSlice.actions.setUser({ isLoading: true }));
+    showLoading();
     setTimeout(() => {
-      dispatch(commonSlice.actions.setUser({ isLoading: false }));
+      hideLoading();
       selectedSearchTypeRef.current = [...selectedSearchType];
       setSearchTypeTitle1(
         ONGOING_REVIEW_LIST_SEARCH_TYPE_LIST[0].searchItems[
@@ -77,9 +74,9 @@ const OngoingListView = () => {
 
   useEffect(() => {
     console.log('OngoingListView mounted');
-    dispatch(commonSlice.actions.setUser({ isLoading: true }));
+    showLoading();
     setTimeout(() => {
-      dispatch(commonSlice.actions.setUser({ isLoading: false }));
+      hideLoading();
     }, 500);
   }, []);
 
@@ -122,6 +119,22 @@ const OngoingListView = () => {
     [],
   );
 
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }: any): boolean => {
+    const paddingToBottom: number = 20;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+
+  // infinite loading 여부
+  const [isInfiniteLoading, setIsInfiniteLoading] =
+    React.useState<boolean>(false);
+
   return (
     <>
       <View style={styles.controlContainer}>
@@ -147,6 +160,16 @@ const OngoingListView = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        onScroll={({ nativeEvent }) => {
+          if (isCloseToBottom(nativeEvent) && !isInfiniteLoading) {
+            setIsInfiniteLoading(true);
+            setTimeout(() => {
+              setIsInfiniteLoading(false);
+            }, 2000);
+            console.log('close to bottom');
+          }
+        }}
+        scrollEventThrottle={100}
       >
         {ONGOING_REVIEW_LIST.length === 0 && (
           <Text style={styles.noItemText}>진행중인 리뷰가 없습니다.</Text>
@@ -154,6 +177,11 @@ const OngoingListView = () => {
         {ONGOING_REVIEW_LIST.map(item => (
           <OngoingItem {...item} />
         ))}
+        {isInfiniteLoading && (
+          <View style={{ paddingVertical: 20 }}>
+            <ActivityIndicator size="small" color="#333" />
+          </View>
+        )}
       </ScrollView>
       <BottomSheetModalProvider>
         <BottomSheetModal

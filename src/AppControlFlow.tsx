@@ -3,14 +3,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './AppNavigator';
 import Toast from './components/Toast';
-import { toastRef } from './util/action';
+import { loadingRef, toastRef } from './util/action';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from './redux/store/reducers';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Loading from './components/Loading';
 
 const AppControlFlow: React.FC = () => {
-  const isLoggedIn: boolean = useSelector(
+  const isLoading: boolean = useSelector(
     (state: RootState) => state.common.isLoading,
   );
 
@@ -21,7 +22,8 @@ const AppControlFlow: React.FC = () => {
           <AppNavigator />
         </NavigationContainer>
         <Toast {...{ ref: toastRef }} />
-        {isLoggedIn && (
+        <Loading {...{ ref: loadingRef }} />
+        {isLoading && (
           <View style={styles.loadingWrap}>
             <ActivityIndicator size="large" color="#ffffff" />
           </View>

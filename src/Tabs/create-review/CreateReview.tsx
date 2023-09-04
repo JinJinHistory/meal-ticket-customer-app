@@ -4,6 +4,7 @@ import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { useEffect } from 'react';
 import commonSlice from '../../redux/slices/common';
 import { useAppDispatch } from '../../redux/store';
+import {hideLoading, showLoading} from "../../util/action";
 
 const BlogRoute = () => (
   <View>
@@ -42,9 +43,9 @@ export default function CreateReview() {
 
   useEffect(() => {
     console.log('CreateReview mounted');
-    dispatch(commonSlice.actions.setUser({ isLoading: true }));
+    showLoading();
     setTimeout(() => {
-      dispatch(commonSlice.actions.setUser({ isLoading: false }));
+      hideLoading();
     }, 500);
   }, []);
 

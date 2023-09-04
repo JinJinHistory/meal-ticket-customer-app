@@ -13,6 +13,7 @@ import NoticeListView from './notice/NoticeListView';
 import { useAppDispatch } from '../../redux/store';
 import commonSlice from '../../redux/slices/common';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {hideLoading, showLoading} from "../../util/action";
 
 const buttonList: { name: string; path: string; iconName: string }[] = [
   // { name: '새로운 리뷰 생성', path: 'create-review', iconName: 'edit' },
@@ -36,9 +37,9 @@ const HomeView = () => {
 
   useEffect(() => {
     console.log('HomeView mounted');
-    dispatch(commonSlice.actions.setUser({ isLoading: true }));
+    showLoading();
     setTimeout(() => {
-      dispatch(commonSlice.actions.setUser({ isLoading: false }));
+      hideLoading();
     }, 500);
   }, []);
 
@@ -94,7 +95,7 @@ const HomeView = () => {
               alignItems: 'center',
               borderBottomColor: '#e5e5e5',
               borderBottomWidth: 0.5,
-              paddingBottom: 10,
+              padding: 15,
             }}
           >
             <Text style={{ fontSize: 15, fontWeight: '600' }}>공지사항</Text>

@@ -7,13 +7,13 @@ const CompletedItem = (params: CompletedType) => {
     <View style={[styles.wrap]}>
       <View style={styles.stateBox}>
         <Text style={styles.stateText}>
-          {params.state} : {params.comDate?.toLocaleDateString()}
+          {params.state} : {params.comDate?.toLocaleDateString('ko-KR')}
         </Text>
       </View>
       <View style={styles.contentBox}>
         <Text style={{ fontSize: 14 }}>{params.title}</Text>
         <Text style={{ fontSize: 12 }}>
-          리뷰생성일: {params.regDate?.toLocaleDateString()}
+          리뷰생성일: {params.regDate?.toLocaleDateString('ko-KR')}
         </Text>
       </View>
     </View>

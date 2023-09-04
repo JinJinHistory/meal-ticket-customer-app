@@ -15,6 +15,7 @@ import commonSlice from '../../../redux/slices/common';
 import { useAppDispatch } from '../../../redux/store';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { AppImages } from '../../../assets';
+import {hideLoading, showLoading} from "../../../util/action";
 
 const CompletedListView = () => {
   const dispatch = useAppDispatch();
@@ -31,9 +32,9 @@ const CompletedListView = () => {
 
   useEffect(() => {
     console.log('CompletedListView mounted');
-    dispatch(commonSlice.actions.setUser({ isLoading: true }));
+    showLoading();
     setTimeout(() => {
-      dispatch(commonSlice.actions.setUser({ isLoading: false }));
+      hideLoading();
     }, 500);
   }, []);
 

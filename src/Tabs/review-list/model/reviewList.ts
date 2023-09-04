@@ -95,6 +95,36 @@ export const ONGOING_REVIEW_LIST: OngoingType[] = [
     regDate: new Date(),
     state: EnumReviewState.REVIEW_WAIT,
   },
+  {
+    key: 6,
+    title: '#방문자리뷰10',
+    regDate: new Date(),
+    state: EnumReviewState.REVIEW_WAIT,
+  },
+  {
+    key: 7,
+    title: '#방문자리뷰10',
+    regDate: new Date(),
+    state: EnumReviewState.REVIEW_WAIT,
+  },
+  {
+    key: 8,
+    title: '#방문자리뷰10',
+    regDate: new Date(),
+    state: EnumReviewState.REVIEW_WAIT,
+  },
+  {
+    key: 9,
+    title: '#방문자리뷰10',
+    regDate: new Date(),
+    state: EnumReviewState.REVIEW_WAIT,
+  },
+  {
+    key: 10,
+    title: '#방문자리뷰10',
+    regDate: new Date(),
+    state: EnumReviewState.REVIEW_WAIT,
+  },
 ];
 
 export const COMPLETED_REVIEW_LIST: CompletedType[] = [

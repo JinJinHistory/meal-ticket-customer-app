@@ -8,7 +8,7 @@ const NoticeListView = () => {
   // const navigation = useNavigation<any>();
 
   return (
-    <View>
+    <View style={{ paddingHorizontal: 15 }}>
       {NOTICE_LIST.length === 0 && (
         <Text style={styles.noItemText}>공지사항이 없습니다.</Text>
       )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NoticeType } from '../model/noticeList';
 
 const NoticeItem = (params: NoticeType) => {
@@ -18,7 +18,7 @@ const NoticeItem = (params: NoticeType) => {
             fontSize: 12,
           }}
         >
-          {params.regDate?.toLocaleDateString()}
+          {params.regDate?.toLocaleDateString('ko-KR')}
         </Text>
       </View>
     </TouchableOpacity>
