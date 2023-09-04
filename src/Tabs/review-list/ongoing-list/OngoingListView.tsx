@@ -28,6 +28,14 @@ const OngoingListView = () => {
   const dispatch = useAppDispatch();
   // const navigation = useNavigation<any>();
 
+  // search type title
+  const [searchTypeTitle1, setSearchTypeTitle1] =
+    React.useState<string>('1개월');
+  const [searchTypeTitle2, setSearchTypeTitle2] =
+    React.useState<string>('전체');
+  const [searchTypeTitle3, setSearchTypeTitle3] =
+    React.useState<string>('최신순');
+
   const [selectedSearchType, setSelectedSearchType] = React.useState([0, 0, 0]);
 
   // 검색조건 선택 시 기존 선택 값 저장하기 위한 변수 useRef
@@ -35,8 +43,27 @@ const OngoingListView = () => {
 
   // 검색 조건 선택 submit 이벤트
   const onClickSearchTypeSubmit = () => {
-    selectedSearchTypeRef.current = [...selectedSearchType];
-    bottomSheetModalRef.current?.dismiss();
+    dispatch(commonSlice.actions.setUser({ isLoading: true }));
+    setTimeout(() => {
+      dispatch(commonSlice.actions.setUser({ isLoading: false }));
+      selectedSearchTypeRef.current = [...selectedSearchType];
+      setSearchTypeTitle1(
+        ONGOING_REVIEW_LIST_SEARCH_TYPE_LIST[0].searchItems[
+          selectedSearchType[0]
+        ].name,
+      );
+      setSearchTypeTitle2(
+        ONGOING_REVIEW_LIST_SEARCH_TYPE_LIST[1].searchItems[
+          selectedSearchType[1]
+        ].name,
+      );
+      setSearchTypeTitle3(
+        ONGOING_REVIEW_LIST_SEARCH_TYPE_LIST[2].searchItems[
+          selectedSearchType[2]
+        ].name,
+      );
+      bottomSheetModalRef.current?.dismiss();
+    }, 500);
   };
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -110,7 +137,7 @@ const OngoingListView = () => {
             }}
           >
             <Text style={{ color: 'white', fontSize: 12 }}>
-              1개월 • 전체 • 최신순
+              {searchTypeTitle1} • {searchTypeTitle2} • {searchTypeTitle3}
             </Text>
             <Image source={AppImages.downArrow} resizeMode="cover" />
           </View>
