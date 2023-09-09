@@ -1,123 +1,163 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  // Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useNavigation} from "@react-navigation/native";
+import {hideLoading, showLoading} from "../../util/action";
+import commonSlice from "../../redux/slices/common";
+import {useAppDispatch} from "../../redux/store";
+import {useSelector} from "react-redux";
+import {RootState} from "../../redux/store/reducers";
+import customApi from "../../api/axios";
+import {login} from "../../api/services/authService";
+
+const api = axios.create({
+	validateStatus: function (status) {
+		return status >= 200 && status < 500; // 200-499 사이의 상태 코드를 유효한 상태로 처리
+	},
+});
 
 export default function LoginView() {
-  const navigation = useNavigation<any>();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [email, setEmail] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [password, setPassword] = useState('');
+	// dispatch 객체 생성
+	const dispatch = useAppDispatch();
+	// 아이디
+	const [email, setEmail] = useState<string>('');
+	// 비밀번호
+	const [password, setPassword] = useState<string>('');
 
-  // const showAlert = (viewId: string) =>
-  //   Alert.alert('Alert', 'Button pressed ' + viewId);
-  return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <Image
-          style={styles.inputIcon}
-          source={{
-            uri: 'https://img.icons8.com/ios-filled/512/circled-envelope.png',
-          }}
-        />
-        <TextInput
-          style={styles.inputs}
-          placeholder="Email"
-          keyboardType="email-address"
-          underlineColorAndroid="transparent"
-          onChangeText={(e: string) => setEmail(e)}
-        />
-      </View>
+	const handleLogin = async () => {
 
-      <View style={styles.inputContainer}>
-        <Image
-          style={styles.inputIcon}
-          source={{ uri: 'https://img.icons8.com/ios-glyphs/512/key.png' }}
-        />
-        <TextInput
-          style={styles.inputs}
-          placeholder="Password"
-          secureTextEntry={true}
-          underlineColorAndroid="transparent"
-          onChangeText={(e: string) => setPassword(e)}
-        />
-      </View>
+		// 아이디 및 비밀번호 유효성 검사
+		if (!email) {
+			Alert.alert('아이디를 입력하세요.');
+			return;
+		}
+		if (!password) {
+			Alert.alert('비밀번호를 입력하세요.');
+			return;
+		}
 
-      <TouchableOpacity
-        style={[styles.buttonContainer, styles.loginButton]}
-        onPress={() => navigation.navigate('MainDrawer')}
-      >
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
+		// 로딩 표시
+		showLoading();
 
-      {/*<TouchableOpacity*/}
-      {/*  style={styles.buttonContainer}*/}
-      {/*  onPress={() => showAlert('forgot password')}*/}
-      {/*>*/}
-      {/*  <Text>Forgot your password?</Text>*/}
-      {/*</TouchableOpacity>*/}
+		try {
+			// 로그인 요청 데이터 준비
+			const requestData = {
+				username: email,
+				password: password,
+			};
 
-      {/*<TouchableOpacity*/}
-      {/*  style={styles.buttonContainer}*/}
-      {/*  onPress={() => showAlert('sign up')}*/}
-      {/*>*/}
-      {/*  <Text>Sign up</Text>*/}
-      {/*</TouchableOpacity>*/}
-    </View>
-  );
+			// 로그인 API 엔드포인트 URL
+			const response = await login(requestData);
+
+			if (response.status === 200) {
+				console.log(response.data);
+				// 성공적인 응답 처리
+				const jwtToken = '임시토큰'; // 실제 토큰으로 변경
+				await AsyncStorage.setItem('token', jwtToken);
+				dispatch(commonSlice.actions.setToken({token: jwtToken}));
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				// console.error('로그인 실패', response);
+				Alert.alert('로그인 실패', response.data.msg);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		}
+		finally
+		{
+			// 로딩 숨기기
+			hideLoading();
+		}
+	};
+
+	return (
+		<View style={styles.container}>
+			<View style={styles.inputContainer}>
+				<Image
+					style={styles.inputIcon}
+					source={{
+						uri: 'https://img.icons8.com/ios-filled/512/user.png',
+					}}
+				/>
+				<TextInput
+					style={styles.inputs}
+					placeholder="아이디"
+					underlineColorAndroid="transparent"
+					value={email}
+					onChangeText={(e: string) => setEmail(e)}
+				/>
+			</View>
+
+			<View style={styles.inputContainer}>
+				<Image
+					style={styles.inputIcon}
+					source={{uri: 'https://img.icons8.com/ios-glyphs/512/key.png'}}
+				/>
+				<TextInput
+					style={styles.inputs}
+					placeholder="비밀번호"
+					secureTextEntry={true}
+					underlineColorAndroid="transparent"
+					value={password}
+					onChangeText={(e: string) => setPassword(e)}
+				/>
+			</View>
+
+			<TouchableOpacity
+				style={[styles.buttonContainer, styles.loginButton]}
+				onPress={handleLogin}
+			>
+				<Text style={styles.loginText}>로그인</Text>
+			</TouchableOpacity>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#DCDCDC',
-  },
-  inputContainer: {
-    borderBottomColor: '#F5FCFF',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
-    borderBottomWidth: 1,
-    width: 250,
-    height: 45,
-    marginBottom: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  inputs: {
-    height: 45,
-    marginLeft: 16,
-    borderBottomColor: '#FFFFFF',
-    flex: 1,
-  },
-  inputIcon: {
-    width: 30,
-    height: 30,
-    marginLeft: 15,
-    justifyContent: 'center',
-  },
-  buttonContainer: {
-    height: 45,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    width: 250,
-    borderRadius: 30,
-  },
-  loginButton: {
-    backgroundColor: 'orange',
-  },
-  loginText: {
-    color: 'white',
-  },
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#DCDCDC',
+	},
+	inputContainer: {
+		borderBottomColor: '#F5FCFF',
+		backgroundColor: '#FFFFFF',
+		borderRadius: 30,
+		borderBottomWidth: 1,
+		width: 250,
+		height: 45,
+		marginBottom: 20,
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	inputs: {
+		height: 45,
+		marginLeft: 16,
+		borderBottomColor: '#FFFFFF',
+		flex: 1,
+	},
+	inputIcon: {
+		width: 30,
+		height: 30,
+		marginLeft: 15,
+		justifyContent: 'center',
+	},
+	buttonContainer: {
+		height: 45,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginBottom: 20,
+		width: 250,
+		borderRadius: 30,
+	},
+	loginButton: {
+		backgroundColor: 'orange',
+	},
+	loginText: {
+		color: 'white',
+	},
 });
