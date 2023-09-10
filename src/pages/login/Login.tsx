@@ -64,9 +64,7 @@ export default function LoginView() {
 		} catch (error) {
 			console.error('네트워크 오류', error);
 			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
-		}
-		finally
-		{
+		} finally {
 			// 로딩 숨기기
 			hideLoading();
 		}
