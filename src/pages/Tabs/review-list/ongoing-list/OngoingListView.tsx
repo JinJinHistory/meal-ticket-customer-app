@@ -21,8 +21,8 @@ import {
 	BottomSheetModal,
 	BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import {AppImages} from '../../../assets';
-import {hideLoading, showLoading} from '../../../util/action';
+import {AppImages} from '../../../../assets';
+import {hideLoading, showLoading} from '../../../../util/action';
 import DatePicker from "react-native-date-picker";
 
 const OngoingListView = () => {

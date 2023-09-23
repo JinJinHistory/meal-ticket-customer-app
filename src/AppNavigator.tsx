@@ -2,12 +2,14 @@ import React, {useEffect, useLayoutEffect} from 'react';
 import {StatusBar} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import LoginView from './pages/login/Login';
-import Tabs from './Tabs/Tabs';
+import Tabs from './pages/Tabs/Tabs';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useAppDispatch} from "./redux/store";
 import commonSlice from "./redux/slices/common";
 import {useSelector} from "react-redux";
 import {RootState} from "./redux/store/reducers";
+import {routes} from "./routes";
+import NoticeListView from "./pages/notice/list/notice-list-view";
 
 const Stack = createStackNavigator();
 
@@ -26,9 +28,10 @@ export default () => {
 			<Stack.Navigator screenOptions={{headerShown: false}}>
 				{
 					!!token
-						? <Stack.Screen name="Tabs" component={Tabs}/>
-						: <Stack.Screen name="Login" component={LoginView}/>
+						? <Stack.Screen name={routes.TABS} component={Tabs}/>
+						: <Stack.Screen name={routes.LOGIN} component={LoginView}/>
 				}
+				<Stack.Screen name={routes.NOTICE_LIST} component={NoticeListView}/>
 			</Stack.Navigator>
 		</>
 	);

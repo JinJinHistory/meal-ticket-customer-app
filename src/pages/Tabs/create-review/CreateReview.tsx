@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Text, useWindowDimensions, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { useEffect } from 'react';
-import commonSlice from '../../redux/slices/common';
-import { useAppDispatch } from '../../redux/store';
-import {hideLoading, showLoading} from "../../util/action";
+import commonSlice from '../../../redux/slices/common';
+import { useAppDispatch } from '../../../redux/store';
+import {hideLoading, showLoading} from "../../../util/action";
 
 const BlogRoute = () => (
   <View>

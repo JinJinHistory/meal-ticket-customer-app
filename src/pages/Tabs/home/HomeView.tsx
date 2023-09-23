@@ -2,15 +2,16 @@ import {Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity
 import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import NoticeListView from './notice/NoticeListView';
-import {useAppDispatch} from '../../redux/store';
+import {useAppDispatch} from '../../../redux/store';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {hideLoading, showLoading} from "../../util/action";
+import {hideLoading, showLoading} from "../../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import commonSlice from "../../redux/slices/common";
+import commonSlice from "../../../redux/slices/common";
+import {routes} from "../../../routes";
 
 const buttonList: { name: string; path: string; iconName: string }[] = [
-	{name: '진행중인 리뷰', path: 'ongoing-list', iconName: 'list'},
-	{name: '완료된 리뷰', path: 'completed-list', iconName: 'list'},
+	{name: '진행중인 리뷰', path: routes.ONGOING_LIST, iconName: 'list'},
+	{name: '완료된 리뷰', path: routes.COMPLETED_LIST, iconName: 'list'},
 	{name: '인스타 좋아요 신청', path: '', iconName: 'star'},
 ];
 
@@ -50,7 +51,7 @@ const HomeView = () => {
 					</View>
 					<View style={styles.createReviewButtonContainer}>
 						<TouchableOpacity
-							onPress={() => navigation.navigate('create-review')}
+							onPress={() => navigation.navigate(routes.CREATE_REVIEW)}
 							style={[
 								styles.createReviewButton,
 								{backgroundColor: '#eeeeee'},
@@ -92,6 +93,7 @@ const HomeView = () => {
 					>
 						<Text style={{fontSize: 15, fontWeight: '600'}}>공지사항</Text>
 						<TouchableOpacity style={{}} onPress={() => {
+							navigation.navigate(routes.NOTICE_LIST)
 						}}>
 							<Text
 								style={{

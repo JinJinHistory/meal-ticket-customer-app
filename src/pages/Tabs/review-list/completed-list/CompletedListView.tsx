@@ -11,11 +11,11 @@ import React, { useEffect } from 'react';
 // import { useNavigation } from '@react-navigation/native';
 import { COMPLETED_REVIEW_LIST } from '../model/reviewList';
 import CompletedItem from './CompletedItem';
-import commonSlice from '../../../redux/slices/common';
-import { useAppDispatch } from '../../../redux/store';
+import commonSlice from '../../../../redux/slices/common';
+import { useAppDispatch } from '../../../../redux/store';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { AppImages } from '../../../assets';
-import {hideLoading, showLoading} from "../../../util/action";
+import { AppImages } from '../../../../assets';
+import {hideLoading, showLoading} from "../../../../util/action";
 
 const CompletedListView = () => {
   const dispatch = useAppDispatch();

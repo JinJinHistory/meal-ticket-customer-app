@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import OngoingListView from './review-list/ongoing-list/OngoingListView';
 import CompletedListView from './review-list/completed-list/CompletedListView';
 import CreateReview from './create-review/CreateReview';
+import {routes} from "../../routes";
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +18,7 @@ function Tabs() {
       }}
     >
       <Tab.Screen
-        name="home"
+        name={routes.HOME}
         component={HomeView}
         options={{
           tabBarLabel: 'HOME',
@@ -28,7 +29,7 @@ function Tabs() {
         }}
       />
       <Tab.Screen
-        name="create-review"
+        name={routes.CREATE_REVIEW}
         component={CreateReview}
         options={{
           tabBarLabel: '리뷰생성',
@@ -40,7 +41,7 @@ function Tabs() {
         }}
       />
       <Tab.Screen
-        name="ongoing-list"
+        name={routes.ONGOING_LIST}
         component={OngoingListView}
         options={{
           tabBarLabel: '진행중인 리뷰',
@@ -51,7 +52,7 @@ function Tabs() {
         }}
       />
       <Tab.Screen
-        name="completed-list"
+        name={routes.COMPLETED_LIST}
         component={CompletedListView}
         options={{
           tabBarLabel: '완료된 리뷰',
