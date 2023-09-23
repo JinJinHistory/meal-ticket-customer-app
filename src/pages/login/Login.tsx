@@ -1,14 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useNavigation} from "@react-navigation/native";
 import {hideLoading, showLoading} from "../../util/action";
 import commonSlice from "../../redux/slices/common";
 import {useAppDispatch} from "../../redux/store";
-import {useSelector} from "react-redux";
-import {RootState} from "../../redux/store/reducers";
-import customApi from "../../api/axios";
 import {login} from "../../api/services/authService";
 
 const api = axios.create({
@@ -73,12 +69,6 @@ export default function LoginView() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.inputContainer}>
-				<Image
-					style={styles.inputIcon}
-					source={{
-						uri: 'https://img.icons8.com/ios-filled/512/user.png',
-					}}
-				/>
 				<TextInput
 					style={styles.inputs}
 					placeholder="아이디"
@@ -89,10 +79,6 @@ export default function LoginView() {
 			</View>
 
 			<View style={styles.inputContainer}>
-				<Image
-					style={styles.inputIcon}
-					source={{uri: 'https://img.icons8.com/ios-glyphs/512/key.png'}}
-				/>
 				<TextInput
 					style={styles.inputs}
 					placeholder="비밀번호"
@@ -123,7 +109,7 @@ const styles = StyleSheet.create({
 	inputContainer: {
 		borderBottomColor: '#F5FCFF',
 		backgroundColor: '#FFFFFF',
-		borderRadius: 30,
+		borderRadius: 10,
 		borderBottomWidth: 1,
 		width: 250,
 		height: 45,
@@ -137,12 +123,6 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#FFFFFF',
 		flex: 1,
 	},
-	inputIcon: {
-		width: 30,
-		height: 30,
-		marginLeft: 15,
-		justifyContent: 'center',
-	},
 	buttonContainer: {
 		height: 45,
 		flexDirection: 'row',
@@ -150,7 +130,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginBottom: 20,
 		width: 250,
-		borderRadius: 30,
+		borderRadius: 10,
 	},
 	loginButton: {
 		backgroundColor: 'orange',
