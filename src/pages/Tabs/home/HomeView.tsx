@@ -51,7 +51,7 @@ const HomeView = () => {
 					</View>
 					<View style={styles.createReviewButtonContainer}>
 						<TouchableOpacity
-							onPress={() => navigation.navigate(routes.CREATE_REVIEW)}
+							onPress={() => navigation.navigate(routes.CREATE_REVIEW_BLOG)}
 							style={[
 								styles.createReviewButton,
 								{backgroundColor: '#eeeeee'},
@@ -61,7 +61,7 @@ const HomeView = () => {
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.createReviewButton, {backgroundColor: 'orange'}]}
-							onPress={() => navigation.navigate('create-review')}
+							onPress={() => navigation.navigate(routes.CREATE_REVIEW_DIRECT)}
 						>
 							<Text style={styles.createReviewButtonText}>방문자</Text>
 						</TouchableOpacity>

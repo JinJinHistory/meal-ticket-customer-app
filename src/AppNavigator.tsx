@@ -10,6 +10,8 @@ import {useSelector} from "react-redux";
 import {RootState} from "./redux/store/reducers";
 import {routes} from "./routes";
 import NoticeListView from "./pages/notice/list/notice-list-view";
+import CreateReviewBlog from "./pages/Tabs/create-review/create-review-blog/create-review-blog";
+import CreateReviewDirect from "./pages/Tabs/create-review/create-review-direct/create-review-direct";
 
 const Stack = createStackNavigator();
 
@@ -32,6 +34,8 @@ export default () => {
 						: <Stack.Screen name={routes.LOGIN} component={LoginView}/>
 				}
 				<Stack.Screen name={routes.NOTICE_LIST} component={NoticeListView}/>
+				<Stack.Screen name={routes.CREATE_REVIEW_BLOG} component={CreateReviewBlog}/>
+				<Stack.Screen name={routes.CREATE_REVIEW_DIRECT} component={CreateReviewDirect}/>
 			</Stack.Navigator>
 		</>
 	);
