@@ -1,11 +1,61 @@
 import React from 'react';
 import Header from "../../../../components/header";
-import {SafeAreaView, StyleSheet, Text, TextInput, View} from "react-native";
+import {
+	Alert,
+	PermissionsAndroid,
+	Platform,
+	SafeAreaView,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View
+} from "react-native";
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const CreateReviewBlog = () => {
 	const [text, onChangeText] = React.useState('업장 상호명');
 	const [number, onChangeNumber] = React.useState('키워드 5가지 입력');
 	const [value, onChangeTextArea] = React.useState('가이드라인');
+
+	// // 안드로이드와 ios 분기 권한 체크
+	// const checkPermission = async () => {
+	// 	if (Platform.OS === 'ios') {
+	// 		const photoPermission = await Permissions.check('photo');
+	// 		if (photoPermission !== 'authorized') {
+	// 			const permission = await Permissions.request('photo');
+	// 			if (permission !== 'authorized') {
+	// 				Alert.alert('권한 요청을 거부하셨습니다.');
+	// 				return;
+	// 			}
+	// 		}
+	// 	}
+	// 	else {
+	// 		const permission = await PermissionsAndroid.request(
+	// 			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+	// 		);
+	// 		if (permission !== PermissionsAndroid.RESULTS.GRANTED) {
+	// 			Alert.alert('권한 요청을 거부하셨습니다.');
+	// 			return;
+	// 		}
+	// 	}
+	// }
+
+	// 갤러리 열기 함수
+	const openGallery = async () => {
+		// // 권한 체크
+		// await checkPermission();
+
+		await launchImageLibrary({
+			mediaType: 'photo',
+			maxWidth: 300,
+			maxHeight: 300,
+			includeBase64: true,
+			selectionLimit: 15,
+		}, (response) => {
+			console.log(response);
+		});
+	};
 
 	return (
 		<SafeAreaView>
@@ -57,9 +107,11 @@ const CreateReviewBlog = () => {
 						<Text style={styles.inputLabel}>이미지 업로드</Text>
 						<Text style={styles.inputDesc}>최대 15장의 이미지를 업로드 할 수 있습니다. (최소 5장이상)</Text>
 						<View>
-							<Text>
-								이미지 선택 영역
-							</Text>
+							<TouchableOpacity onPress={openGallery}>
+								<Text>
+									이미지 선택 영역
+								</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
 
