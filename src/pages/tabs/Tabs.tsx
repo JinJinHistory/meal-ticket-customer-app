@@ -6,6 +6,9 @@ import OngoingListView from './review-list/ongoing-list/OngoingListView';
 import CompletedListView from './review-list/completed-list/CompletedListView';
 import CreateReview from './create-review/CreateReview';
 import {routes} from "../../routes";
+import {theme} from "../../assets/styles/common-styles";
+import {AppImages} from "../../assets";
+import {WithLocalSvg} from "react-native-svg";
 
 const Tab = createBottomTabNavigator();
 
@@ -14,7 +17,7 @@ function Tabs() {
     <Tab.Navigator
       initialRouteName="home"
       screenOptions={{
-        tabBarActiveTintColor: 'orange',
+        tabBarActiveTintColor: theme.primaryColor,
       }}
     >
       <Tab.Screen
@@ -25,41 +28,30 @@ function Tabs() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home" size={size} color={color} />
           ),
-          headerTitle: '고향옥얼큰순대국 구래점',
-        }}
-      />
-      <Tab.Screen
-        name={routes.CREATE_REVIEW}
-        component={CreateReview}
-        options={{
-          tabBarLabel: '리뷰생성',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="edit" size={size} color={color} />
-          ),
-          // tabBarBadge: 3,
-          headerTitle: '리뷰생성',
+          headerShown: false,
         }}
       />
       <Tab.Screen
         name={routes.ONGOING_LIST}
         component={OngoingListView}
         options={{
-          tabBarLabel: '진행중인 리뷰',
+          tabBarLabel: '식권',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="list" size={size} color={color} />
+	          // @ts-ignore
+	          <WithLocalSvg asset={AppImages.iconQrcode} width="20" height="20" style={{fill: color}} />
           ),
-          headerTitle: '진행중인 리뷰',
+          headerTitle: '식권',
         }}
       />
       <Tab.Screen
         name={routes.COMPLETED_LIST}
         component={CompletedListView}
         options={{
-          tabBarLabel: '완료된 리뷰',
+          tabBarLabel: '설정',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="list" size={size} color={color} />
+            <Icon name="settings" size={size} color={color} />
           ),
-          headerTitle: '완료된 리뷰',
+          headerTitle: '설정',
         }}
       />
     </Tab.Navigator>

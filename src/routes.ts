@@ -13,5 +13,7 @@ export const routes = {
 	CREATE_REVIEW_DIRECT: '/tabs/create-review/direct',
 	CREATE_REVIEW_BLOG: '/tabs/create-review/blog',
 
+	POINT_CHARGING: '/point-charging',
+
 	NOTICE_LIST: '/tabs/notice-list',
 }

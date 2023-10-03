@@ -28,11 +28,13 @@ export default Header;
 
 const styles = StyleSheet.create({
 	wrap: {
-		padding: 10,
 		height: 50,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
+		borderBottomColor: '#ddd',
+		borderBottomWidth: 1,
+		paddingHorizontal: 15,
 	},
 	boldText: {
 		fontWeight: "500",

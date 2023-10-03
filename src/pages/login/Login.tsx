@@ -5,7 +5,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {hideLoading, showLoading} from "../../util/action";
 import commonSlice from "../../redux/slices/common";
 import {useAppDispatch} from "../../redux/store";
-import {login} from "../../api/services/authService";
+import {login} from "../../api/services/account-service";
+import {RequestAccountLogin} from "../../api/models/requests/account/request-account-login.model";
+import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
+import {ResponseAccountLogin} from "../../api/models/responses/account/response-account-login.model";
+import {theme} from "../../assets/styles/common-styles";
+import {AppImages} from "../../assets";
+import {WithLocalSvg} from "react-native-svg";
 
 const api = axios.create({
 	validateStatus: function (status) {
@@ -38,24 +44,23 @@ export default function LoginView() {
 
 		try {
 			// 로그인 요청 데이터 준비
-			const requestData = {
+			const requestData: RequestAccountLogin = {
 				username: email,
 				password: password,
 			};
 
 			// 로그인 API 엔드포인트 URL
-			const response = await login(requestData);
+			const response: CommonResponseData<ResponseAccountLogin> = await login(requestData);
 
 			if (response.status === 200) {
-				console.log(response.data);
 				// 성공적인 응답 처리
-				const jwtToken = '임시토큰'; // 실제 토큰으로 변경
+				const jwtToken: string = '임시토큰'; // 실제 토큰으로 변경
 				await AsyncStorage.setItem('token', jwtToken);
 				dispatch(commonSlice.actions.setToken({token: jwtToken}));
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
 				// console.error('로그인 실패', response);
-				Alert.alert('로그인 실패', response.data.msg);
+				Alert.alert('로그인 실패', response.message);
 			}
 		} catch (error) {
 			console.error('네트워크 오류', error);
@@ -68,6 +73,12 @@ export default function LoginView() {
 
 	return (
 		<View style={styles.container}>
+			<View style={styles.titleRow}>
+				<Text style={styles.titleText}>MEAL TICKET</Text>
+				{/*@ts-ignore*/}
+				<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: theme.primaryColor}} />
+			</View>
+
 			<View style={styles.inputContainer}>
 				<TextInput
 					style={styles.inputs}
@@ -104,13 +115,13 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#DCDCDC',
+		backgroundColor: '#FFFFFF',
 	},
 	inputContainer: {
-		borderBottomColor: '#F5FCFF',
+		borderColor: theme.primaryColor,
+		borderWidth: 1.5,
 		backgroundColor: '#FFFFFF',
 		borderRadius: 10,
-		borderBottomWidth: 1,
 		width: 250,
 		height: 45,
 		marginBottom: 20,
@@ -120,7 +131,7 @@ const styles = StyleSheet.create({
 	inputs: {
 		height: 45,
 		marginLeft: 16,
-		borderBottomColor: '#FFFFFF',
+		borderColor: theme.primaryColor,
 		flex: 1,
 	},
 	buttonContainer: {
@@ -133,9 +144,21 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 	},
 	loginButton: {
-		backgroundColor: 'orange',
+		backgroundColor: theme.primaryColor,
 	},
 	loginText: {
 		color: 'white',
 	},
+	titleRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginBottom: 20,
+		gap: 5,
+	},
+	titleText: {
+		color: theme.primaryColor,
+		fontSize: 20,
+		fontWeight: '600',
+	}
 });

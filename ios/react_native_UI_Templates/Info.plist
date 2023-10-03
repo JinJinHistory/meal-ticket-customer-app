@@ -35,8 +35,14 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>카메라 사용 권한은 이미지 촬영 및 첨부를 위해 필요합니다.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>카메라 사용 권한은 이미지 촬영 및 첨부를 위해 필요합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>카메라 사용 권한은 이미지 촬영 및 첨부를 위해 필요합니다.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>WorkSans-Bold.ttf</string>
@@ -68,11 +74,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-    <key>NSCameraUsageDescription</key>
-    <string>카메라 사용 권한은 이미지 촬영 및 첨부를 위해 필요합니다.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>카메라 사용 권한은 이미지 촬영 및 첨부를 위해 필요합니다.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>카메라 사용 권한은 이미지 촬영 및 첨부를 위해 필요합니다.</string>
 </dict>
 </plist>
