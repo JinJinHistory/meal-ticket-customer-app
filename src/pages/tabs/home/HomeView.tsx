@@ -19,10 +19,16 @@ import {routes} from "../../../routes";
 import {commonStyles, theme} from "../../../assets/styles/common-styles";
 import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../redux/store/reducers";
+import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
 
 const HomeView = () => {
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
+
+	// redux에 저장 된 회사 정보 가져오기
+	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
 
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -50,7 +56,7 @@ const HomeView = () => {
 			>
 				<View style={commonStyles.pageLayout}>
 					<View style={styles.companyCard}>
-						<Text style={styles.companyCardText}>행복복지관</Text>
+						<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
 						<TouchableOpacity
 							onPress={() => {}}
 						>
@@ -96,7 +102,8 @@ const HomeView = () => {
 					<TouchableOpacity style={{}} onPress={() => {
 						// storage 초기화
 						AsyncStorage.clear();
-						dispatch(commonSlice.actions.setToken({token: null}));
+						dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
+						dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: new ResponseCompanyModel()}));
 					}}>
 						<View style={styles.shadowWrap}>
 							<View style={styles.menuButtonContainer}>
@@ -185,6 +192,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		marginBottom: 15,
+		paddingVertical: 15,
 	},
 	companyCardText: {
 		fontSize: 17,

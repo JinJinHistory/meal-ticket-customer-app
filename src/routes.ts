@@ -5,6 +5,8 @@ export const routes = {
 
 	HOME: '/tabs/home',
 
+	SELECT_COMPANY: '/select-company',
+
 	ONGOING_LIST: '/tabs/ongoing-list',
 
 	COMPLETED_LIST: '/tabs/completed-list',

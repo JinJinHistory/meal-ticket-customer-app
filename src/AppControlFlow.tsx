@@ -16,9 +16,14 @@ const AppControlFlow: React.FC = () => {
 
 	// 초기 토큰이 storage에 존재하는지 확인 후 redux에 저장
 	useEffect(() => {
-		AsyncStorage.getItem('token').then((token) => {
-			console.log('초기 토큰 확인: ', token);
-			dispatch(commonSlice.actions.setToken({token: token}));
+		AsyncStorage.getItem('userUuid').then((userUuid) => {
+			console.log('초기 실행 시 유저 uuid 확인: ', userUuid);
+			dispatch(commonSlice.actions.setUserUuid({userUuid: userUuid}));
+		});
+
+		AsyncStorage.getItem('selectedCompany').then((selectedCompany) => {
+			console.log('초기 실행 시 선택된 회사 정보 확인: ', selectedCompany && JSON.parse(selectedCompany));
+			dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: selectedCompany && JSON.parse(selectedCompany)}));
 		});
 	}, []);
 

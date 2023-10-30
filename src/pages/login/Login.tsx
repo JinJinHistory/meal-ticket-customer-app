@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {hideLoading, showLoading} from "../../util/action";
@@ -12,12 +12,6 @@ import {ResponseAccountLogin} from "../../api/models/responses/account/response-
 import {theme} from "../../assets/styles/common-styles";
 import {AppImages} from "../../assets";
 import {WithLocalSvg} from "react-native-svg";
-
-const api = axios.create({
-	validateStatus: function (status) {
-		return status >= 200 && status < 500; // 200-499 사이의 상태 코드를 유효한 상태로 처리
-	},
-});
 
 export default function LoginView() {
 	// dispatch 객체 생성
@@ -52,14 +46,16 @@ export default function LoginView() {
 			// 로그인 API 엔드포인트 URL
 			const response: CommonResponseData<ResponseAccountLogin> = await login(requestData);
 
+			// 응답에 성공했을 경우
 			if (response.status === 200) {
-				// 성공적인 응답 처리
-				const jwtToken: string = '임시토큰'; // 실제 토큰으로 변경
-				await AsyncStorage.setItem('token', jwtToken);
-				dispatch(commonSlice.actions.setToken({token: jwtToken}));
+				// 데이터가 존재할 경우
+				if (response.data) {
+					console.log('[로그인 성공]: ', response.data);
+					await AsyncStorage.setItem('userUuid', response.data.uuid);
+					dispatch(commonSlice.actions.setUserUuid({userUuid: response.data.uuid}));
+				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
-				// console.error('로그인 실패', response);
 				Alert.alert('로그인 실패', response.message);
 			}
 		} catch (error) {
