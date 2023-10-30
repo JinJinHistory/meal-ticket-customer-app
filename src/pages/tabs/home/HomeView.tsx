@@ -1,4 +1,5 @@
 import {
+	Alert, BackHandler,
 	Platform,
 	RefreshControl,
 	SafeAreaView,
@@ -39,13 +40,51 @@ const HomeView = () => {
 		}, 2000);
 	}, []);
 
-	useEffect(() => {
+	// 뒤로가기 시 컨펌 후 앱 종료
+	const onBackPress = () => {
+		Alert.alert(
+			'앱 종료',
+			'앱을 종료하시겠습니까?',
+			[
+				{
+					text: '취소',
+					onPress: () => null,
+					style: 'cancel',
+				},
+				{ text: '확인', onPress: () => BackHandler.exitApp() },
+			],
+			{ cancelable: false },
+		);
+		return true;
+	}
+
+	useEffect(()=>{
 		console.log('HomeView mounted');
 		showLoading();
 		setTimeout(() => {
 			hideLoading();
 		}, 500);
-	}, []);
+
+		const backAction = () => {
+			// 여기에 뒤로 가기 버튼을 눌렀을 때 수행할 작업을 정의합니다.
+
+			// 작업을 수행한 후에는 true 또는 false를 반환합니다.
+			// true를 반환하면 기본적인 뒤로 가기 동작을 막습니다.
+			// false를 반환하면 기본 동작인 앱을 종료하지 않고 뒤로 갑니다.
+
+			// 일반적으로 작업이 처리되었으면 true를 반환하여 기본 동작을 막습니다.
+			navigation.isFocused() && onBackPress();
+			return navigation.isFocused();
+		};
+
+		// 리스너 등록
+		const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+		return () => {
+			// 이벤트 리스너 해제
+			backHandler.remove();
+		}
+	},[]);
 
 	return (
 		<SafeAreaView style={{flex: 1}}>
@@ -59,7 +98,10 @@ const HomeView = () => {
 					<View style={styles.companyCard}>
 						<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
 						<TouchableOpacity
-							onPress={() => {}}
+							onPress={() => {
+								// 회사 선택 페이지를 위에 쌓는다
+								navigation.push(routes.SELECT_COMPANY);
+							}}
 						>
 							<WithLocalSvg asset={AppImages.iconMarker} width="20" height="20" />
 						</TouchableOpacity>
@@ -96,7 +138,7 @@ const HomeView = () => {
 						// storage 초기화
 						AsyncStorage.clear();
 						dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
-						dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: new ResponseCompanyModel()}));
+						dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: {id: '', name: ''}}));
 					}}>
 						<View style={styles.shadowWrap}>
 							<View style={styles.menuButtonContainer}>

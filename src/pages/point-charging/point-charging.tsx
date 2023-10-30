@@ -150,6 +150,8 @@ const PointCharging = () => {
 		}
 	}
 
+	console.log(navigation.getState());
+
 	return (
 		<SafeAreaView style={{flex: 1}}>
 			<Header title='포인트 충전'/>

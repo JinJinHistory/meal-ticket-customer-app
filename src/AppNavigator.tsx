@@ -24,12 +24,17 @@ export default () => {
 		// 유저 uuid가 존재하면 로그인 된 상태
 		if (userUuid) {
 			// 회사 uuid가 존재하지 않으면 회사 선택 화면으로 이동
-			if (!selectedCompany) {
+			if (!selectedCompany.id) {
 				return <Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>;
 			}
 			// 회사 uuid가 존재하면 탭 화면으로 이동
 			else {
-				return <Stack.Screen name={routes.TABS} component={Tabs}/>;
+				return (
+					<>
+						<Stack.Screen name={routes.TABS} component={Tabs}/>
+						<Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>
+					</>
+				);
 			}
 		}
 		// 유저 uuid가 존재하지 않으면 로그인 되지 않은 상태

@@ -8,16 +8,24 @@ import {ResponseCompanyModel} from "../../api/models/responses/company/response-
 import {getCompanyList} from "../../api/services/company-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import commonSlice from "../../redux/slices/common";
+import {useNavigation} from "@react-navigation/native";
+import {routes} from "../../routes";
+import {useSelector} from "react-redux";
+import {RootState} from "../../redux/store/reducers";
 
 export default function SelectCompany() {
+	const navigation = useNavigation<any>();
 	// dispatch 객체 생성
 	const dispatch = useAppDispatch();
+
+	// redux에 저장 된 회사 정보 가져오기
+	const reduxSelectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
 
 	// 회사 목록
 	const [companyList, setCompanyList] = useState<Array<ResponseCompanyModel>>([]);
 
 	// 선택한 회사 정보
-	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel | null>(null);
+	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>(reduxSelectedCompany);
 
 	// 회사 목록 조회
 	const getData = async () => {
@@ -58,6 +66,7 @@ export default function SelectCompany() {
 		// selectedCompany 를 storage에 저장
 		await AsyncStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
 		dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: selectedCompany}));
+		navigation.navigate(routes.TABS);
 	}
 
 	/**

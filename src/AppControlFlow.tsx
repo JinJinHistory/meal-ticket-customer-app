@@ -17,12 +17,12 @@ const AppControlFlow: React.FC = () => {
 	useEffect(() => {
 		AsyncStorage.getItem('userUuid').then((userUuid) => {
 			console.log('초기 실행 시 유저 uuid 확인: ', userUuid);
-			dispatch(commonSlice.actions.setUserUuid({userUuid: userUuid}));
+			dispatch(commonSlice.actions.setUserUuid({userUuid: userUuid??''}));
 		});
 
 		AsyncStorage.getItem('selectedCompany').then((selectedCompany) => {
-			console.log('초기 실행 시 선택된 회사 정보 확인: ', selectedCompany && JSON.parse(selectedCompany));
-			dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: selectedCompany && JSON.parse(selectedCompany)}));
+			console.log('초기 실행 시 선택된 회사 정보 확인: ', selectedCompany ? JSON.parse(selectedCompany) : { id: '', name: '' });
+			dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: selectedCompany ? JSON.parse(selectedCompany) : { id: '', name: '' }}));
 		});
 	}, []);
 
