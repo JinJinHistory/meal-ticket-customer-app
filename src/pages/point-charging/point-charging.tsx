@@ -1,15 +1,9 @@
 import React, {useState} from 'react';
 import Header from "../../components/header";
-import {Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {commonStyles, theme} from "../../assets/styles/common-styles";
 import {AppImages} from "../../assets";
 import {WithLocalSvg} from "react-native-svg";
-import {RequestAccountLogin} from "../../api/models/requests/account/request-account-login.model";
-import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
-import {ResponseAccountLogin} from "../../api/models/responses/account/response-account-login.model";
-import {login} from "../../api/services/account-service";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import commonSlice from "../../redux/slices/common";
 import {hideLoading, showLoading} from "../../util/action";
 import {charging} from "../../api/services/point-service";
 import {CommonResponse} from "../../api/models/responses/common-response.model";
