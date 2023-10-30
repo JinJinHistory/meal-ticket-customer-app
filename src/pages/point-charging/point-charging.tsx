@@ -1,15 +1,37 @@
 import React, {useState} from 'react';
 import Header from "../../components/header";
-import {SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {commonStyles, theme} from "../../assets/styles/common-styles";
 import {AppImages} from "../../assets";
 import {WithLocalSvg} from "react-native-svg";
+import {RequestAccountLogin} from "../../api/models/requests/account/request-account-login.model";
+import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
+import {ResponseAccountLogin} from "../../api/models/responses/account/response-account-login.model";
+import {login} from "../../api/services/account-service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import commonSlice from "../../redux/slices/common";
+import {hideLoading, showLoading} from "../../util/action";
+import {charging} from "../../api/services/point-service";
+import {CommonResponse} from "../../api/models/responses/common-response.model";
+import {RequestChargingPointModel} from "../../api/models/requests/point/request-charging-point.model";
+import {useSelector} from "react-redux";
+import {RootState} from "../../redux/store/reducers";
+import {routes} from "../../routes";
+import {useNavigation} from "@react-navigation/native";
 
 const keyboardKeys: Array<number | string | undefined> = [
 	1, 2, 3, 4, 5, 6, 7, 8, 9, undefined, 0, 'remove'
 ]
 
 const PointCharging = () => {
+	const navigation = useNavigation<any>();
+
+	// redux에 저장 된 유저 uuid 가져오기
+	const userUuid = useSelector((state: RootState) => state.common.userUuid);
+
+	// redux에 저장 된 회사 정보 가져오기
+	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+
 	const [inputValue, setInputValue] = useState<string>('');
 
 	const handleKeyPress = (key: number | string | undefined): void => {
@@ -69,9 +91,69 @@ const PointCharging = () => {
 		}
 	}
 
-	const onClickSubmitBtn = (): void => {
+	const onClickSubmitBtn = () => {
 		if (!inputValue || inputValue.replace(/[^0-9]/g, '') === '0') return;
 		console.log('충전 금액: ', inputValue.replace(/[^0-9]/g, ''));
+
+		// confirm
+		Alert.alert('포인트 충전', inputValue + '을\n충전하시겠습니까?', [
+			{
+				text: '취소',
+				onPress: () => {
+					console.log('취소');
+				}
+			},
+			{
+				text: '확인',
+				onPress: () => {
+					console.log('확인');
+					// 포인트 충전 요청
+					doCharging();
+				}
+			}
+		]);
+	}
+
+	// 포인트 충전 요청
+	const doCharging = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 로그인 요청 데이터 준비
+			const requestData: RequestChargingPointModel = {
+				user_uuid: userUuid,
+				company_uuid: selectedCompany.id,
+				point: Number.parseInt(inputValue.replace(/[^0-9]/g, ''))
+			};
+
+			// 로그인 API 엔드포인트 URL
+			const response: CommonResponse = await charging(requestData);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				Alert.alert('포인트 충전', response.message + '\n메인 화면으로 이동합니다.', [
+					{
+						text: '확인',
+						onPress: () => {
+							console.log('확인');
+							// 포인트 충전 완료 후 메인 화면으로 이동
+							navigation.navigate(routes.HOME);
+						}
+					}
+
+				]);
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('포인트 충전 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+		}
 	}
 
 	return (

@@ -11,7 +11,6 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useAppDispatch} from '../../../redux/store';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {hideLoading, showLoading} from "../../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import commonSlice from "../../../redux/slices/common";
@@ -22,6 +21,7 @@ import {WithLocalSvg} from "react-native-svg";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../redux/store/reducers";
 import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
+import StatusBarSize from "../../../components/status-bar-size";
 
 const HomeView = () => {
 	const dispatch = useAppDispatch();
@@ -55,6 +55,7 @@ const HomeView = () => {
 				}
 			>
 				<View style={commonStyles.pageLayout}>
+					<StatusBarSize />
 					<View style={styles.companyCard}>
 						<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
 						<TouchableOpacity
@@ -91,14 +92,6 @@ const HomeView = () => {
 							</TouchableOpacity>
 						</View>
 					</View>
-					<TouchableOpacity
-						onPress={() => {}}
-					>
-						<View>
-							<Icon name='star' size={25} color="black"/>
-							<Text style={styles.menuButtonText}>충전 내역</Text>
-						</View>
-					</TouchableOpacity>
 					<TouchableOpacity style={{}} onPress={() => {
 						// storage 초기화
 						AsyncStorage.clear();
@@ -192,7 +185,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		marginBottom: 15,
-		paddingVertical: 15,
 	},
 	companyCardText: {
 		fontSize: 17,

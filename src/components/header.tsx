@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {useNavigation} from "@react-navigation/native";
+import StatusBarSize from "./status-bar-size";
 
 type Props = {
 	title: string;
@@ -11,16 +12,19 @@ const Header = (props: Props) => {
 	const navigation = useNavigation();
 
 	return (
-		<View style={styles.wrap}>
-			<TouchableOpacity style={styles.buttonArea} onPress={() => {
-				// 페이지 뒤로가기
-				navigation.goBack();
-			}}>
-				<Icon name="chevron-left" size={30} color="#333"/>
-			</TouchableOpacity>
-			<Text style={styles.boldText}>{props.title}</Text>
-			<View style={styles.buttonArea} />
-		</View>
+		<>
+			<StatusBarSize />
+			<View style={styles.wrap}>
+				<TouchableOpacity style={styles.buttonArea} onPress={() => {
+					// 페이지 뒤로가기
+					navigation.goBack();
+				}}>
+					<Icon name="chevron-left" size={30} color="#333"/>
+				</TouchableOpacity>
+				<Text style={styles.boldText}>{props.title}</Text>
+				<View style={styles.buttonArea}/>
+			</View>
+		</>
 	);
 };
 

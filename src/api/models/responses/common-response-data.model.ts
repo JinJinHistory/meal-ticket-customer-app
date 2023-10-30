@@ -1,11 +1,9 @@
+import {CommonResponse} from "./common-response.model";
+
 /**
  * 공용 응답 데이터 모델
  */
-export class CommonResponseData<T> {
-	// 응답 상태
-	public status: number = 0;
-	// 응답 메시지
-	public message: string = '';
+export class CommonResponseData<T> extends CommonResponse{
 	// 응답 데이터
 	public data: T | null = null;
 }
