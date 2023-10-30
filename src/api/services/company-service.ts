@@ -1,8 +1,7 @@
 import instance from "../axios_interceptor";
-import {RequestAccountLogin} from "../models/requests/account/request-account-login.model";
 import {CommonResponseData} from "../models/responses/common-response-data.model";
 import {AxiosResponse} from "axios";
-import { ResponseCompanyModel } from "../models/responses/company/response-company.model";
+import {ResponseCompanyModel} from "../models/responses/company/response-company.model";
 
 const COMPANY_URL: string = '/company';
 

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {hideLoading, showLoading} from "../../util/action";
 import commonSlice from "../../redux/slices/common";

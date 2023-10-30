@@ -4,7 +4,6 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import AppNavigator from './AppNavigator';
 import Toast from './components/Toast';
 import {loadingRef, toastRef} from './util/action';
-import {StyleSheet} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Loading from './components/Loading';
 import {useAppDispatch} from "./redux/store";
@@ -39,17 +38,5 @@ const AppControlFlow: React.FC = () => {
 		</GestureHandlerRootView>
 	);
 };
-
-const styles = StyleSheet.create({
-	loadingWrap: {
-		position: 'absolute',
-		backgroundColor: 'rgba(0,0,0,0.7)',
-		width: '100%',
-		height: '100%',
-		zIndex: 9999,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-});
 
 export default AppControlFlow;
