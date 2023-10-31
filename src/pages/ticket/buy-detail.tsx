@@ -9,14 +9,16 @@ import {CommonResponseData} from "../../api/models/responses/common-response-dat
 import {doGetPoint} from "../../api/services/point-service";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store/reducers";
+import {doBuyCompanyTickets} from "../../api/services/ticket-service";
+import {RequestBuyTicketModel} from "../../api/models/requests/ticket/request-buy-ticket.model";
+import {CommonResponse} from "../../api/models/responses/common-response.model";
+import {useNavigation} from "@react-navigation/native";
 
 const BuyDetail = ({route}: any) => {
+	const navigation = useNavigation<any>();
 
 	// redux에 저장 된 유저 uuid 가져오기
 	const userUuid = useSelector((state: RootState) => state.common.userUuid);
-
-	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
 
 	// 포인트
 	const [point, setPoint] = useState<number>(0);
@@ -35,10 +37,10 @@ const BuyDetail = ({route}: any) => {
 		showLoading();
 
 		try {
-			// 포이트 조회 요청 데이터 준비
+			// 포인트 조회 요청 데이터 준비
 			const queryData: RequestGetPointModel = {
 				user_uuid: userUuid,
-				company_uuid: selectedCompany.id
+				company_uuid: route.params.ticketItem.company_uuid
 			};
 
 			// 로그인 API 엔드포인트 URL
@@ -55,6 +57,64 @@ const BuyDetail = ({route}: any) => {
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
 				Alert.alert('포인트 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+		}
+	}
+
+	// 식권 구매 컨펌
+	const buyConfirm = () => {
+		Alert.alert(
+			'식권 구매',
+			'구매하시겠습니까?',
+			[
+				{
+					text: '취소',
+					onPress: () => console.log('Cancel Pressed'),
+					style: 'cancel'
+				},
+				{text: '확인', onPress: buyTicket}
+			],
+			{cancelable: false}
+		);
+	}
+
+	const buyTicket = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 포인트 구매 요청 데이터 준비
+			const requestData: RequestBuyTicketModel = {
+				user_uuid: userUuid,
+				company_uuid: route.params.ticketItem.company_uuid,
+				ticket_uuid: route.params.ticketItem.ticket_uuid,
+				count: count
+			};
+
+			// 로그인 API 엔드포인트 URL
+			const response: CommonResponse = await doBuyCompanyTickets(requestData);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				// 구매성공 메세지 출력 후 확인 클릭 시 뒤로가기
+				Alert.alert('구매 성공', '구매가 완료되었습니다.', [
+					{
+						text: '확인',
+						onPress: () => {
+							// navigation 뒤로가기
+							navigation.goBack();
+						}
+					}
+				]);
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('포인트 구매 실패', response.message);
 			}
 		} catch (error) {
 			console.error('네트워크 오류', error);
@@ -90,7 +150,7 @@ const BuyDetail = ({route}: any) => {
 							<Text style={styles.countBtnText}>-</Text>
 						</TouchableOpacity>
 						<Text style={styles.countText}>{addComma(count)}장</Text>
-						<TouchableOpacity style={{...styles.countBtn, backgroundColor: buyCount === count ? '#ddd' : theme.primaryColor}} disabled={buyCount === count} onPress={() => setCount((prev: number) => prev + 1)}>
+						<TouchableOpacity style={{...styles.countBtn, backgroundColor: buyCount === count || buyCount === 0 ? '#ddd' : theme.primaryColor}} disabled={buyCount === count || buyCount === 0} onPress={() => setCount((prev: number) => prev + 1)}>
 							<Text style={styles.countBtnText}>+</Text>
 						</TouchableOpacity>
 					</View>
@@ -107,9 +167,10 @@ const BuyDetail = ({route}: any) => {
 
 			<TouchableOpacity style={{
 				...styles.submitBtn,
-				// backgroundColor: inputValue && inputValue.replace(/[^0-9]/g, '') !== '0' ? theme.primaryColor : theme.disabledColor
+				backgroundColor: buyCount <= 0 ? '#ddd' : theme.primaryColor
 			}}
-				// onPress={onClickSubmitBtn}
+	          disabled={buyCount <= 0}
+				onPress={buyConfirm}
 			>
 				<Text style={styles.submitText}>구매</Text>
 			</TouchableOpacity>

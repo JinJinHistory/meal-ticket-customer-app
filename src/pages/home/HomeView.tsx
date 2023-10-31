@@ -219,7 +219,10 @@ const HomeView = () => {
 							</TouchableOpacity>
 						</View>
 					</View>
-					<TouchableOpacity style={{}} onPress={onLogoutPress}>
+					<TouchableOpacity style={{}} onPress={() => {
+						// onLogoutPress
+						Alert.alert('준비 중', '준비 중 입니다.');
+					}}>
 						<View style={styles.shadowWrap}>
 							<View style={styles.menuButtonContainer}>
 								{/*@ts-ignore*/}
