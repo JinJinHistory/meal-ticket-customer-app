@@ -1,16 +1,12 @@
 import {Alert, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text,} from 'react-native';
 import React, {useEffect} from 'react';
-import {ONGOING_REVIEW_LIST,} from './model/reviewList';
 import BuyItem from "./buy-Item";
 import {hideLoading, showLoading} from "../../../util/action";
 import Header from "../../../components/header";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../redux/store/reducers";
 import {doGetCompanyTickets} from "../../../api/services/ticket-service";
-import {RequestGetPointModel} from "../../../api/models/requests/point/request-get-point.model";
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
-import {doGetPoint} from "../../../api/services/point-service";
-import {RequestChargingPointModel} from "../../../api/models/requests/point/request-charging-point.model";
 import {ResponseCompanyTicketModel} from "../../../api/models/responses/ticket/response-company-ticket.model";
 import {RequestGetCompanyTicketModel} from "../../../api/models/requests/ticket/request-get-company-ticket.model";
 
