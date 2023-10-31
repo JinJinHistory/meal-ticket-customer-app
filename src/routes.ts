@@ -4,6 +4,7 @@ export const routes = {
 	HOME: '/home',
 	POINT_CHARGING: '/point-charging',
 	TICKET_LIST: '/ticket-list',
+	TICKET_BUY_DETAIL: '/ticket-list/buy-detail',
 
 
 

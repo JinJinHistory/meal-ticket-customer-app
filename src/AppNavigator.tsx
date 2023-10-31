@@ -10,6 +10,7 @@ import CreateReviewBlog from "./pages/tabs/create-review/create-review-blog/crea
 import PointCharging from "./pages/point-charging/point-charging";
 import SelectCompany from "./pages/select-company/select-company";
 import HomeView from "./pages/home/HomeView";
+import BuyDetail from "./pages/ticket/buy-detail";
 
 const Stack = createStackNavigator();
 
@@ -43,7 +44,6 @@ export default () => {
 		}
 	}
 
-
 	return (
 		<>
 			<StatusBar
@@ -55,6 +55,7 @@ export default () => {
 			<Stack.Navigator screenOptions={{headerShown: false}}>
 				{renderView()}
 				<Stack.Screen name={routes.TICKET_LIST} component={BuyListView}/>
+				<Stack.Screen name={routes.TICKET_BUY_DETAIL} component={BuyDetail}/>
 				<Stack.Screen name={routes.CREATE_REVIEW_BLOG} component={CreateReviewBlog}/>
 				<Stack.Screen name={routes.POINT_CHARGING} component={PointCharging}/>
 			</Stack.Navigator>

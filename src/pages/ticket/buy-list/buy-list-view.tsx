@@ -73,7 +73,7 @@ const BuyListView = () => {
 	return (
 		<>
 			<SafeAreaView>
-				<Header title='식권구매'/>
+				<Header title='식권목록'/>
 				<ScrollView
 					refreshControl={
 						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
