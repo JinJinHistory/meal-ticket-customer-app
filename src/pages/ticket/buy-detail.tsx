@@ -99,8 +99,8 @@ const BuyDetail = ({route}: any) => {
 				<View style={styles.pointArea}>
 					<Text>구매 가능 개수: <Text style={styles.pointText}>{buyCount}장</Text>
 					</Text>
-					<Text>보유포인트: <Text style={styles.pointText}>{addComma(point)}P</Text></Text>
-					<Text>구매포인트: <Text style={styles.pointText}>{addComma(count * route.params.ticketItem.price)}P</Text></Text>
+					<Text>보유 포인트: <Text style={styles.pointText}>{addComma(point)}P</Text></Text>
+					<Text>결제할 포인트: <Text style={styles.pointText}>{addComma(count * route.params.ticketItem.price)}P</Text></Text>
 					<Text>결제 후 포인트: <Text style={styles.pointText}>{addComma(point - count * route.params.ticketItem.price)}P</Text></Text>
 				</View>
 			</View>
