@@ -8,7 +8,6 @@ import {RootState} from "../../../redux/store/reducers";
 import {doGetCompanyTickets} from "../../../api/services/ticket-service";
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
 import {ResponseCompanyTicketModel} from "../../../api/models/responses/ticket/response-company-ticket.model";
-import {RequestGetCompanyTicketModel} from "../../../api/models/requests/ticket/request-get-company-ticket.model";
 
 const BuyListView = () => {
 	// redux에 저장 된 회사 정보 가져오기
@@ -34,13 +33,8 @@ const BuyListView = () => {
 		showLoading();
 
 		try {
-			// 포이트 조회 요청 데이터 준비
-			const queryData: RequestGetCompanyTicketModel = {
-				company_uuid: selectedCompany.id,
-			};
-
 			// 로그인 API 엔드포인트 URL
-			const response: CommonResponseData<Array<ResponseCompanyTicketModel>> = await doGetCompanyTickets(queryData);
+			const response: CommonResponseData<Array<ResponseCompanyTicketModel>> = await doGetCompanyTickets(selectedCompany.id);
 
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
