@@ -1,5 +1,5 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import HomeView from './home/HomeView';
+import HomeView from '../home/HomeView';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import OngoingListView from './review-list/ongoing-list/OngoingListView';

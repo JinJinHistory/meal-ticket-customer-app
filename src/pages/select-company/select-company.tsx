@@ -66,7 +66,7 @@ export default function SelectCompany() {
 		// selectedCompany 를 storage에 저장
 		await AsyncStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
 		dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: selectedCompany}));
-		navigation.navigate(routes.TABS);
+		navigation.navigate(routes.HOME);
 	}
 
 	/**

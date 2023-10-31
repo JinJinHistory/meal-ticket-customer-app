@@ -2,14 +2,14 @@ import React from 'react';
 import {StatusBar} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import LoginView from './pages/login/Login';
-import Tabs from './pages/tabs/Tabs';
 import {useSelector} from "react-redux";
 import {RootState} from "./redux/store/reducers";
 import {routes} from "./routes";
-import NoticeListView from "./pages/notice/list/notice-list-view";
+import BuyListView from "./pages/ticket/buy-list/buy-list-view";
 import CreateReviewBlog from "./pages/tabs/create-review/create-review-blog/create-review-blog";
 import PointCharging from "./pages/point-charging/point-charging";
 import SelectCompany from "./pages/select-company/select-company";
+import HomeView from "./pages/home/HomeView";
 
 const Stack = createStackNavigator();
 
@@ -31,7 +31,7 @@ export default () => {
 			else {
 				return (
 					<>
-						<Stack.Screen name={routes.TABS} component={Tabs}/>
+						<Stack.Screen name={routes.HOME} component={HomeView}/>
 						<Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>
 					</>
 				);
@@ -54,7 +54,7 @@ export default () => {
 
 			<Stack.Navigator screenOptions={{headerShown: false}}>
 				{renderView()}
-				<Stack.Screen name={routes.NOTICE_LIST} component={NoticeListView}/>
+				<Stack.Screen name={routes.TICKET_LIST} component={BuyListView}/>
 				<Stack.Screen name={routes.CREATE_REVIEW_BLOG} component={CreateReviewBlog}/>
 				<Stack.Screen name={routes.POINT_CHARGING} component={PointCharging}/>
 			</Stack.Navigator>

@@ -1,15 +1,21 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {EnumReviewState, OngoingType} from "./model/reviewList";
+import {ResponseCompanyTicketModel} from "../../../api/models/responses/ticket/response-company-ticket.model";
+import {addComma} from "../../../util/format";
 
-const NoticeItem = (params: OngoingType) => {
+type Props = {
+	key: number;
+	ticketItem: ResponseCompanyTicketModel;
+};
+const BuyItem = (props: Props) => {
   return (
     <TouchableOpacity style={styles.wrap} onPress={() => {}}>
       <View style={styles.contentBox}>
-        <Text style={{ fontSize: 14 }}>임시 공지글</Text>
-        <Text style={{ fontSize: 12 }}>
-          {params.regDate?.toLocaleDateString('ko-KR')}
-        </Text>
+        <Text style={{ fontSize: 14 }}>{props.ticketItem.name}</Text>
+        <Text style={{ fontSize: 14 }}>{addComma(props.ticketItem.price)}원</Text>
+        {/*<Text style={{ fontSize: 12 }}>*/}
+        {/*  {params.regDate?.toLocaleDateString('ko-KR')}*/}
+        {/*</Text>*/}
       </View>
     </TouchableOpacity>
   );
@@ -41,4 +47,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NoticeItem;
+export default BuyItem;

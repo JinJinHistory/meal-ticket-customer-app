@@ -12,21 +12,22 @@ import {
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {useAppDispatch} from '../../../redux/store';
-import {hideLoading, showLoading} from "../../../util/action";
+import {useAppDispatch} from '../../redux/store';
+import {hideLoading, showLoading} from "../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import commonSlice from "../../../redux/slices/common";
-import {routes} from "../../../routes";
-import {commonStyles, theme} from "../../../assets/styles/common-styles";
-import {AppImages} from "../../../assets";
+import commonSlice from "../../redux/slices/common";
+import {routes} from "../../routes";
+import {commonStyles, theme} from "../../assets/styles/common-styles";
+import {AppImages} from "../../assets";
 import {WithLocalSvg} from "react-native-svg";
 import {useSelector} from "react-redux";
-import {RootState} from "../../../redux/store/reducers";
-import StatusBarSize from "../../../components/status-bar-size";
-import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
-import {RequestGetPointModel} from "../../../api/models/requests/point/request-get-point.model";
-import {doGetPoint} from "../../../api/services/point-service";
-import {addComma} from "../../../util/format";
+import {RootState} from "../../redux/store/reducers";
+import StatusBarSize from "../../components/status-bar-size";
+import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
+import {RequestGetPointModel} from "../../api/models/requests/point/request-get-point.model";
+import {doGetPoint} from "../../api/services/point-service";
+import {addComma} from "../../util/format";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const HomeView = () => {
 	const dispatch = useAppDispatch();
@@ -41,8 +42,10 @@ const HomeView = () => {
 	// 포인트
 	const [point, setPoint] = useState<number>(0);
 
+	// 리프레시 상태
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 
+	// 리프레시 이벤트
 	const onRefresh = useCallback((): void => {
 		setRefreshing(true);
 
@@ -171,14 +174,21 @@ const HomeView = () => {
 				<View style={commonStyles.pageLayout}>
 					<StatusBarSize />
 					<View style={styles.companyCard}>
-						<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
 						<TouchableOpacity
+							style={styles.headerIconArea}
 							onPress={() => {
 								// 회사 선택 페이지를 위에 쌓는다
 								navigation.push(routes.SELECT_COMPANY);
 							}}
 						>
-							<WithLocalSvg asset={AppImages.iconMarker} width="20" height="20" />
+							<WithLocalSvg asset={AppImages.iconMarker} width="15" height="15" />
+							<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={onLogoutPress}
+						>
+							{/*<WithLocalSvg asset={AppImages.iconMarker} width="20" height="20" />*/}
+							<Icon name="logout" size={20} color="black"/>
 						</TouchableOpacity>
 					</View>
 					<View style={[styles.shadowWrap, styles.mainCardWrap]}>
@@ -198,7 +208,7 @@ const HomeView = () => {
 								<Text style={styles.createReviewButtonText}>포인트 충전</Text>
 							</TouchableOpacity>
 							<TouchableOpacity
-								onPress={() => navigation.navigate(routes.CREATE_REVIEW_BLOG)}
+								onPress={() => navigation.navigate(routes.TICKET_LIST)}
 								style={[
 									styles.createReviewButton,
 									{backgroundColor: '#eeeeee'},
@@ -212,14 +222,16 @@ const HomeView = () => {
 					<TouchableOpacity style={{}} onPress={onLogoutPress}>
 						<View style={styles.shadowWrap}>
 							<View style={styles.menuButtonContainer}>
+								{/*@ts-ignore*/}
+								<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: theme.primaryColor}} />
 								<Text
 									style={{
-										color: '#333',
+										color: theme.primaryColor,
 										fontSize: 15,
 										fontWeight: '700',
 									}}
 								>
-									[임시] 로그아웃
+									식권 보관함
 								</Text>
 							</View>
 						</View>
@@ -301,6 +313,13 @@ const styles = StyleSheet.create({
 	companyCardText: {
 		fontSize: 17,
 		fontWeight: '600',
+		color: '#333'
+	},
+	headerIconArea: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		gap: 5,
 	}
 });
 
