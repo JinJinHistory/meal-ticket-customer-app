@@ -9,7 +9,6 @@ import {CommonResponseData} from "../../api/models/responses/common-response-dat
 import {doGetPoint} from "../../api/services/point-service";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store/reducers";
-import ThemeContext from "@react-navigation/native/lib/typescript/src/theming/ThemeContext";
 
 const BuyDetail = ({route}: any) => {
 
