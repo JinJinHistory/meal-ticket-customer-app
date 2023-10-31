@@ -4,7 +4,6 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import OngoingListView from './review-list/ongoing-list/OngoingListView';
 import CompletedListView from './review-list/completed-list/CompletedListView';
-import CreateReview from './create-review/CreateReview';
 import {routes} from "../../routes";
 import {theme} from "../../assets/styles/common-styles";
 import {AppImages} from "../../assets";
