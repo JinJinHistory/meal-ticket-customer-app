@@ -1,5 +1,6 @@
 import {
-	Alert, BackHandler,
+	Alert,
+	BackHandler,
 	Platform,
 	RefreshControl,
 	SafeAreaView,
@@ -21,15 +22,24 @@ import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../redux/store/reducers";
-import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
 import StatusBarSize from "../../../components/status-bar-size";
+import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
+import {RequestGetPointModel} from "../../../api/models/requests/point/request-get-point.model";
+import {doGetPoint} from "../../../api/services/point-service";
+import {addComma} from "../../../util/format";
 
 const HomeView = () => {
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 
+	// redux에 저장 된 유저 uuid 가져오기
+	const userUuid = useSelector((state: RootState) => state.common.userUuid);
+
 	// redux에 저장 된 회사 정보 가져오기
 	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+
+	// 포인트
+	const [point, setPoint] = useState<number>(0);
 
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -39,6 +49,42 @@ const HomeView = () => {
 			setRefreshing(false);
 		}, 2000);
 	}, []);
+
+	// 포인트 조회
+	const getPoint = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 포이트 조회 요청 데이터 준비
+			const queryData: RequestGetPointModel = {
+				user_uuid: userUuid,
+				company_uuid: selectedCompany.id
+			};
+
+			// 로그인 API 엔드포인트 URL
+			const response: CommonResponseData<number> = await doGetPoint(queryData);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				console.log('response: ', response);
+				// 데이터가 존재할 경우
+				if (response.data || response.data === 0) {
+					console.log('데이터가 존재할 경우: ', response.data);
+					setPoint(response.data);
+				}
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('포인트 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+		}
+	}
 
 	// 뒤로가기 시 컨펌 후 앱 종료
 	const onBackPress = () => {
@@ -58,13 +104,33 @@ const HomeView = () => {
 		return true;
 	}
 
+	// 로그아웃 컨펌
+	const onLogoutPress = () => {
+		Alert.alert(
+			'로그아웃',
+			'로그아웃 하시겠습니까?',
+			[
+				{
+					text: '취소',
+					onPress: () => null,
+					style: 'cancel',
+				},
+				{ text: '확인', onPress: () => {
+					// storage 초기화
+					AsyncStorage.clear();
+					dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
+					dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: {id: '', name: ''}}));
+				} },
+			],
+			{ cancelable: false },
+		);
+		return true;
+	}
+
 	useEffect(()=>{
 		console.log('HomeView mounted');
-		showLoading();
-		setTimeout(() => {
-			hideLoading();
-		}, 500);
 
+		// 뒤로 가기 이벤트 리스너 등록
 		const backAction = () => {
 			// 여기에 뒤로 가기 버튼을 눌렀을 때 수행할 작업을 정의합니다.
 
@@ -85,6 +151,15 @@ const HomeView = () => {
 			backHandler.remove();
 		}
 	},[]);
+
+	/**
+	 * 초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회
+	 */
+	useEffect(() => {
+		console.log('초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회');
+		// 포인트 조회
+		getPoint();
+	}, [selectedCompany]);
 
 	return (
 		<SafeAreaView style={{flex: 1}}>
@@ -109,7 +184,7 @@ const HomeView = () => {
 					<View style={[styles.shadowWrap, styles.mainCardWrap]}>
 						<View style={[styles.menuButtonContainer, {paddingBottom: 10}]}>
 							<WithLocalSvg asset={AppImages.iconConins} width="20" height="20" />
-							<Text style={styles.menuButtonText}>보유 포인트 <Text style={{color: '#fff'}}>0P</Text></Text>
+							<Text style={styles.menuButtonText}>보유 포인트 <Text style={{color: '#fff'}}>{addComma(point)}P</Text></Text>
 						</View>
 						<View style={styles.createReviewButtonContainer}>
 							<TouchableOpacity
@@ -134,12 +209,7 @@ const HomeView = () => {
 							</TouchableOpacity>
 						</View>
 					</View>
-					<TouchableOpacity style={{}} onPress={() => {
-						// storage 초기화
-						AsyncStorage.clear();
-						dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
-						dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: {id: '', name: ''}}));
-					}}>
+					<TouchableOpacity style={{}} onPress={onLogoutPress}>
 						<View style={styles.shadowWrap}>
 							<View style={styles.menuButtonContainer}>
 								<Text
