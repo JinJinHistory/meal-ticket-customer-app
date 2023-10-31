@@ -45,9 +45,9 @@ const HomeView = () => {
 
 	const onRefresh = useCallback((): void => {
 		setRefreshing(true);
-		setTimeout(() => {
-			setRefreshing(false);
-		}, 2000);
+
+		// 포인트 조회
+		getPoint().then(() => setRefreshing(false));
 	}, []);
 
 	// 포인트 조회
