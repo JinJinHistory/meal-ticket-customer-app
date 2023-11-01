@@ -1,7 +1,6 @@
 import {
 	Alert,
 	BackHandler,
-	Platform,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
@@ -28,19 +27,25 @@ import {RequestGetPointModel} from "../../api/models/requests/point/request-get-
 import {doGetPoint} from "../../api/services/point-service";
 import {addComma} from "../../util/format";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import {doGetUserTickets} from "../../api/services/ticket-service";
+import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
+import {ResponseCompanyModel} from "../../api/models/responses/company/response-company.model";
 
 const HomeView = () => {
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 
 	// redux에 저장 된 유저 uuid 가져오기
-	const userUuid = useSelector((state: RootState) => state.common.userUuid);
+	const userUuid: string = useSelector((state: RootState) => state.common.userUuid);
 
 	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+	const selectedCompany: ResponseCompanyModel = useSelector((state: RootState) => state.common.selectedCompany);
 
-	// 포인트
-	const [point, setPoint] = useState<number>(0);
+	// redux에 저장 된 포인트 정보 가져오기
+	const point: number = useSelector((state: RootState) => state.common.point);
+
+	// redux에 저장 된 내 식권 목록 정보 가져오기
+	const userTickets: Array<ResponseUserTicketModel> = useSelector((state: RootState) => state.common.userTickets);
 
 	// 리프레시 상태
 	const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -49,8 +54,14 @@ const HomeView = () => {
 	const onRefresh = useCallback((): void => {
 		setRefreshing(true);
 
-		// 포인트 조회
-		getPoint().then(() => setRefreshing(false));
+		// 유저 식권 조회 후 리프레시 종료
+		getUserTickets().then(() => setRefreshing(false));
+
+		// // 포인트와 유저 식권이 조회된 후 리프레시 종료
+		// Promise.all([
+		// 	getPoint(),
+		// 	getUserTickets()
+		// ]).then(() => setRefreshing(false));
 	}, []);
 
 	// 포인트 조회
@@ -74,11 +85,51 @@ const HomeView = () => {
 				// 데이터가 존재할 경우
 				if (response.data || response.data === 0) {
 					console.log('데이터가 존재할 경우: ', response.data);
-					setPoint(response.data);
+					// 포인트 저장
+					dispatch(commonSlice.actions.setPoint({point: response.data}));
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
 				Alert.alert('포인트 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+		}
+	}
+
+	/**
+	 * 유저 식권 조회
+	 */
+	const getUserTickets = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 포이트 조회 요청 데이터 준비
+			const queryData: RequestGetPointModel = {
+				user_uuid: userUuid,
+				company_uuid: selectedCompany.id
+			};
+
+			// 로그인 API 엔드포인트 URL
+			const response: CommonResponseData<Array<ResponseUserTicketModel>> = await doGetUserTickets(queryData);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				console.log('response: ', response);
+				// 데이터가 존재할 경우
+				if (response.data || response.data === 0) {
+					console.log('데이터가 존재할 경우: ', response.data);
+					// 유저 식권 목록 저장
+					dispatch(commonSlice.actions.setUserTickets({userTickets: response.data}));
+				}
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('유저 식권 조회 실패', response.message);
 			}
 		} catch (error) {
 			console.error('네트워크 오류', error);
@@ -100,9 +151,9 @@ const HomeView = () => {
 					onPress: () => null,
 					style: 'cancel',
 				},
-				{ text: '확인', onPress: () => BackHandler.exitApp() },
+				{text: '확인', onPress: () => BackHandler.exitApp()},
 			],
-			{ cancelable: false },
+			{cancelable: false},
 		);
 		return true;
 	}
@@ -118,19 +169,21 @@ const HomeView = () => {
 					onPress: () => null,
 					style: 'cancel',
 				},
-				{ text: '확인', onPress: () => {
-					// storage 초기화
-					AsyncStorage.clear();
-					dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
-					dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: {id: '', name: ''}}));
-				} },
+				{
+					text: '확인', onPress: () => {
+						// storage 초기화
+						AsyncStorage.clear();
+						dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
+						dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: {id: '', name: ''}}));
+					}
+				},
 			],
-			{ cancelable: false },
+			{cancelable: false},
 		);
 		return true;
 	}
 
-	useEffect(()=>{
+	useEffect(() => {
 		console.log('HomeView mounted');
 
 		// 뒤로 가기 이벤트 리스너 등록
@@ -153,7 +206,7 @@ const HomeView = () => {
 			// 이벤트 리스너 해제
 			backHandler.remove();
 		}
-	},[]);
+	}, []);
 
 	/**
 	 * 초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회
@@ -162,85 +215,115 @@ const HomeView = () => {
 		console.log('초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회');
 		// 포인트 조회
 		getPoint();
+
+		// 유저 식권 조회
+		getUserTickets();
 	}, [selectedCompany]);
 
 	return (
 		<SafeAreaView style={{flex: 1}}>
-			<ScrollView
-				refreshControl={
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-				}
-			>
-				<View style={commonStyles.pageLayout}>
-					<StatusBarSize />
-					<View style={styles.companyCard}>
-						<TouchableOpacity
-							style={styles.headerIconArea}
-							onPress={() => {
-								// 회사 선택 페이지를 위에 쌓는다
-								navigation.push(routes.SELECT_COMPANY);
-							}}
-						>
-							<WithLocalSvg asset={AppImages.iconMarker} width="15" height="15" />
-							<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={onLogoutPress}
-						>
-							{/*<WithLocalSvg asset={AppImages.iconMarker} width="20" height="20" />*/}
-							<Icon name="logout" size={20} color="black"/>
-						</TouchableOpacity>
-					</View>
-					<View style={[styles.shadowWrap, styles.mainCardWrap]}>
-						<View style={[styles.menuButtonContainer, {paddingBottom: 10}]}>
-							<WithLocalSvg asset={AppImages.iconConins} width="20" height="20" />
-							<Text style={styles.menuButtonText}>보유 포인트 <Text style={{color: '#fff'}}>{addComma(point)}P</Text></Text>
-						</View>
-						<View style={styles.createReviewButtonContainer}>
-							<TouchableOpacity
-								onPress={() => navigation.navigate(routes.POINT_CHARGING)}
-								style={[
-									styles.createReviewButton,
-									{backgroundColor: '#fff'},
-								]}
-							>
-								<WithLocalSvg asset={AppImages.iconAdd} width="20" height="20" />
-								<Text style={styles.createReviewButtonText}>포인트 충전</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() => navigation.navigate(routes.TICKET_LIST)}
-								style={[
-									styles.createReviewButton,
-									{backgroundColor: '#eeeeee'},
-								]}
-							>
-								<WithLocalSvg asset={AppImages.iconShoppingBagAdd} width="17" height="17" />
-								<Text style={styles.createReviewButtonText}>식권 구매</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-					<TouchableOpacity style={{}} onPress={() => {
-						// onLogoutPress
-						Alert.alert('준비 중', '준비 중 입니다.');
-					}}>
-						<View style={styles.shadowWrap}>
-							<View style={styles.menuButtonContainer}>
-								{/*@ts-ignore*/}
-								<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: theme.primaryColor}} />
-								<Text
-									style={{
-										color: theme.primaryColor,
-										fontSize: 15,
-										fontWeight: '700',
-									}}
-								>
-									식권 보관함
-								</Text>
-							</View>
-						</View>
+			<View style={{...commonStyles.pageLayout, flex: 1}}>
+				<StatusBarSize/>
+				<View style={styles.companyCard}>
+					<TouchableOpacity
+						style={styles.headerIconArea}
+						onPress={() => {
+							// 회사 선택 페이지를 위에 쌓는다
+							navigation.push(routes.SELECT_COMPANY);
+						}}
+					>
+						<WithLocalSvg asset={AppImages.iconMarker} width="15" height="15"/>
+						<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={onLogoutPress}
+					>
+						{/*<WithLocalSvg asset={AppImages.iconMarker} width="20" height="20" />*/}
+						<Icon name="logout" size={20} color="black"/>
 					</TouchableOpacity>
 				</View>
-			</ScrollView>
+				<View style={[styles.shadowWrap, styles.mainCardWrap]}>
+					<View style={[styles.menuButtonContainer, {paddingVertical: 15, justifyContent: 'space-between'}]}>
+						<View style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							gap: 5,
+						}}>
+							<WithLocalSvg asset={AppImages.iconConins} width="20" height="20"/>
+							<Text style={styles.menuButtonText}>보유 포인트 <Text
+								style={{color: '#fff'}}>{addComma(point)}P</Text></Text>
+						</View>
+						<TouchableOpacity onPress={getPoint}>
+							<Icon name="refresh" size={25} color="white"/>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.createReviewButtonContainer}>
+						<TouchableOpacity
+							onPress={() => navigation.navigate(routes.POINT_CHARGING)}
+							style={[
+								styles.createReviewButton,
+								{backgroundColor: '#fff'},
+							]}
+						>
+							<WithLocalSvg asset={AppImages.iconAdd} width="20" height="20"/>
+							<Text style={styles.createReviewButtonText}>포인트 충전</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => navigation.navigate(routes.TICKET_LIST)}
+							style={[
+								styles.createReviewButton,
+								{backgroundColor: '#eeeeee'},
+							]}
+						>
+							<WithLocalSvg asset={AppImages.iconShoppingBagAdd} width="17" height="17"/>
+							<Text style={styles.createReviewButtonText}>식권 구매</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+				<View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingBottom: 5, gap: 5}}>
+					{/*@ts-ignore*/}
+					<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: '#333'}} />
+					<Text style={{fontSize: 14, fontWeight: '700', color: '#333' }}>나의 식권 목록</Text>
+				</View>
+				<ScrollView
+					style={styles.scrollView}
+					refreshControl={
+						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+					}
+				>
+					{
+						!userTickets.length
+						? <Text>포인트 충전 후 식권을 구매할 수 있습니다.</Text>
+						: userTickets.map((item: ResponseUserTicketModel, index: number) => {
+							return (
+								<TouchableOpacity key={index} style={{}} onPress={() => {
+									// onLogoutPress
+									Alert.alert('준비 중', '준비 중 입니다.');
+								}}>
+									<View style={styles.shadowWrap}>
+										<View style={{...styles.menuButtonContainer, justifyContent: 'space-between'}}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+												{/*@ts-ignore*/}
+												<WithLocalSvg asset={AppImages.iconQrcode} width="25" height="25" style={{fill: '#333', marginRight: 5}} />
+												<View>
+													<Text style={{ color: '#333',  fontSize: 14,  fontWeight: '700' }}>
+														{item.name}
+													</Text>
+													<Text style={{ color: '#333', fontSize: 12, fontWeight: '700' }}>
+														{addComma(item.price)}P
+													</Text>
+												</View>
+											</View>
+
+											<Text>Click <Text style={{fontStyle: 'italic'}}>!</Text></Text>
+										</View>
+									</View>
+								</TouchableOpacity>
+							)
+						})
+					}
+				</ScrollView>
+			</View>
 		</SafeAreaView>
 	);
 };
@@ -251,24 +334,23 @@ const styles = StyleSheet.create({
 		shadowColor: 'rgba(0, 0, 0, 0.3)',
 		padding: 10,
 		borderRadius: 10,
-		...Platform.select({
-			ios: {
-				shadowColor: 'rgba(0, 0, 0, 0.3)',
-				shadowOffset: {width: 0, height: 2},
-				shadowOpacity: 0.3,
-				shadowRadius: 4,
-			},
-			android: {
-				elevation: 5,
-			},
-		}),
+		// ...Platform.select({
+		// 	ios: {
+		// 		shadowColor: 'rgba(0, 0, 0, 0.3)',
+		// 		shadowOffset: {width: 0, height: 2},
+		// 		shadowOpacity: 0.3,
+		// 		shadowRadius: 4,
+		// 	},
+		// 	android: {
+		// 		elevation: 5,
+		// 	},
+		// }),
 		flexDirection: 'column',
 		gap: 10,
 		marginBottom: 15,
 	},
 	menuButtonContainer: {
 		paddingHorizontal: 10,
-		paddingVertical: 15,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
@@ -323,6 +405,9 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		gap: 5,
+	},
+	scrollView: {
+		padding: 10,
 	}
 });
 

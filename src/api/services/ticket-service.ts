@@ -4,6 +4,8 @@ import {CommonResponseData} from "../models/responses/common-response-data.model
 import {ResponseCompanyTicketModel} from "../models/responses/ticket/response-company-ticket.model";
 import {RequestBuyTicketModel} from "../models/requests/ticket/request-buy-ticket.model";
 import {CommonResponse} from "../models/responses/common-response.model";
+import {RequestGetPointModel} from "../models/requests/point/request-get-point.model";
+import {ResponseUserTicketModel} from "../models/responses/ticket/response-user-ticket.model";
 
 const TICKET_URL: string = '/ticket';
 
@@ -26,3 +28,14 @@ export const doBuyCompanyTickets = async (requestData: RequestBuyTicketModel): P
 		throw error;
 	}
 };
+
+// 회원 식권 조회
+export const doGetUserTickets = async (queryData: RequestGetPointModel): Promise<CommonResponseData<Array<ResponseUserTicketModel>>> => {
+	try {
+		const response: AxiosResponse<CommonResponseData<Array<ResponseUserTicketModel>>> = await instance.get<CommonResponseData<Array<ResponseUserTicketModel>>>(`${TICKET_URL}/user`, {params: queryData});
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};
+

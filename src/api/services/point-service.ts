@@ -17,7 +17,7 @@ export const charging = async (request: RequestChargingPointModel): Promise<Comm
 	}
 };
 
-// 포인트 충전 조회
+// 포인트 조회
 export const doGetPoint = async (queryData: RequestGetPointModel): Promise<CommonResponseData<number>> => {
 	try {
 		const response: AxiosResponse<CommonResponseData<number>> = await instance.get<CommonResponseData<number>>(`${POINT_URL}`, { params: queryData });
