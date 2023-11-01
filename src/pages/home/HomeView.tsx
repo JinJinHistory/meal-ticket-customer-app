@@ -1,6 +1,6 @@
 import {
 	Alert,
-	BackHandler,
+	BackHandler, Modal, Pressable,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
@@ -30,6 +30,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import {doGetUserTickets} from "../../api/services/ticket-service";
 import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
 import {ResponseCompanyModel} from "../../api/models/responses/company/response-company.model";
+import QRCode from "react-native-qrcode-svg";
 
 const HomeView = () => {
 	const dispatch = useAppDispatch();
@@ -46,6 +47,12 @@ const HomeView = () => {
 
 	// redux에 저장 된 내 식권 목록 정보 가져오기
 	const userTickets: Array<ResponseUserTicketModel> = useSelector((state: RootState) => state.common.userTickets);
+
+	// 선택한 식권의 정보
+	const [selectedTicket, setSelectedTicket] = useState<ResponseUserTicketModel>({ qr_id: '', name: '', price: 0 });
+
+	// 모달 상태
+	const [modalVisible, setModalVisible] = useState<boolean>(false);
 
 	// 리프레시 상태
 	const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -183,6 +190,15 @@ const HomeView = () => {
 		return true;
 	}
 
+	// 식권 클릭 이벤트
+	const onTicketPress = (ticket: ResponseUserTicketModel) => {
+		// 선택한 식권 정보 세팅
+		setSelectedTicket(ticket);
+
+		// 모달 오픈
+		setModalVisible(true);
+	}
+
 	useEffect(() => {
 		console.log('HomeView mounted');
 
@@ -297,8 +313,7 @@ const HomeView = () => {
 						: userTickets.map((item: ResponseUserTicketModel, index: number) => {
 							return (
 								<TouchableOpacity key={index} style={{}} onPress={() => {
-									// onLogoutPress
-									Alert.alert('준비 중', '준비 중 입니다.');
+									onTicketPress(item);
 								}}>
 									<View style={styles.shadowWrap}>
 										<View style={{...styles.menuButtonContainer, justifyContent: 'space-between'}}>
@@ -324,6 +339,31 @@ const HomeView = () => {
 					}
 				</ScrollView>
 			</View>
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={modalVisible}
+				onRequestClose={() => {
+					setModalVisible(!modalVisible);
+				}}>
+				<View style={styles.centeredView}>
+					<View style={styles.modalView}>
+						<Text style={{...styles.modalText, fontWeight: '700'}}>QR 코드를 제시해주세요</Text>
+						<Text style={{...styles.modalText, marginBottom: 15}}>{selectedTicket.name} {addComma(selectedTicket.price)}P</Text>
+						<QRCode
+							value={selectedTicket.qr_id}
+							size={200}
+							color="black"
+							backgroundColor="white"
+						/>
+						<Pressable
+							style={[styles.button, styles.buttonClose]}
+							onPress={() => setModalVisible(!modalVisible)}>
+							<Icon name="close" size={20} color="white" />
+						</Pressable>
+					</View>
+				</View>
+			</Modal>
 		</SafeAreaView>
 	);
 };
@@ -408,7 +448,52 @@ const styles = StyleSheet.create({
 	},
 	scrollView: {
 		padding: 10,
-	}
+	},
+	// modal style
+	centeredView: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginTop: 22,
+	},
+	modalView: {
+		margin: 20,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 35,
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	button: {
+		borderRadius: 50,
+		padding: 10,
+		elevation: 2,
+	},
+	buttonOpen: {
+		backgroundColor: '#F194FF',
+	},
+	buttonClose: {
+		backgroundColor: theme.primaryColor,
+		marginTop: 15,
+		opacity: 0.8,
+	},
+	textStyle: {
+		color: 'white',
+		fontWeight: 'bold',
+		textAlign: 'center',
+	},
+	modalText: {
+		marginBottom: 5,
+		textAlign: 'center',
+		color: '#333'
+	},
 });
 
 export default HomeView;
