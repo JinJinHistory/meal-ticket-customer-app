@@ -10,6 +10,7 @@ import Home from "./pages/home/home";
 import BuyDetail from "./pages/ticket/buy-detail";
 import {useRecoilState} from 'recoil';
 import {companyInfoState, userInfoState} from "./atoms/common-state";
+import SignUpView from "./pages/account/sign-up/sign-up";
 
 const Stack = createStackNavigator();
 
@@ -53,6 +54,7 @@ export default () => {
 
 			<Stack.Navigator screenOptions={{headerShown: false}}>
 				{renderView()}
+				<Stack.Screen name={routes.SIGN_UP} component={SignUpView}/>
 				<Stack.Screen name={routes.TICKET_LIST} component={BuyListView}/>
 				<Stack.Screen name={routes.TICKET_BUY_DETAIL} component={BuyDetail}/>
 				<Stack.Screen name={routes.POINT_CHARGING} component={PointCharging}/>

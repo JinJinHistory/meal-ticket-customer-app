@@ -12,6 +12,7 @@ import {WithLocalSvg} from "react-native-svg";
 import {useNavigation} from "@react-navigation/native";
 import {useRecoilState} from "recoil";
 import {userInfoState} from "../../../atoms/common-state";
+import {routes} from "../../../routes";
 
 export default function LoginView() {
 	const navigation = useNavigation<any>();
@@ -141,10 +142,18 @@ export default function LoginView() {
 			</View>
 
 			<TouchableOpacity
-				style={[styles.buttonContainer, styles.loginButton]}
+				style={{...styles.buttonContainer, ...styles.loginButton, marginBottom: 10}}
 				onPress={handleLogin}
 			>
 				<Text style={styles.loginText}>로그인</Text>
+			</TouchableOpacity>
+
+			{/*회원가입 페이지 이동 버튼*/}
+			<TouchableOpacity
+				style={[styles.buttonContainer, styles.loginButton]}
+				onPress={() => navigation.navigate(routes.SIGN_UP)}
+			>
+				<Text style={styles.loginText}>회원가입</Text>
 			</TouchableOpacity>
 		</View>
 	);
@@ -164,7 +173,7 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		width: 250,
 		height: 45,
-		marginBottom: 20,
+		marginBottom: 10,
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
@@ -179,7 +188,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginBottom: 20,
 		width: 250,
 		borderRadius: 10,
 	},

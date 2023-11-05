@@ -30,7 +30,6 @@ export default function SelectCompany() {
 
 		try {
 			// 로그인 API 엔드포인트 URL
-
 			const response: CommonResponseData<Array<ResponseCompanyModel>> = await doGetCompanyList();
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
@@ -59,7 +58,8 @@ export default function SelectCompany() {
 			return;
 		}
 
-		// selectedCompany 를 storage에 저장
+		// selectedCompany 를 storage 에 저장
+		console.log('selectedCompany: ', selectedCompany);
 		await AsyncStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
 		setCompanyInfo(selectedCompany);
 		navigation.navigate(routes.HOME);

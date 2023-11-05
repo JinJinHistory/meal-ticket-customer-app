@@ -67,7 +67,7 @@ const Home = () => {
 		// 	getPoint(),
 		// 	getUserTickets()
 		// ]).then(() => setRefreshing(false));
-	}, []);
+	}, [companyInfo]);
 
 	// 포인트 조회
 	const getPoint = async () => {
@@ -232,6 +232,9 @@ const Home = () => {
 
 		// 유저 식권 조회
 		getUserTickets();
+
+		console.log('회사 아이디 변경 시 포인트 조회: ', companyInfo);
+
 	}, [companyInfo]);
 
 	return (
