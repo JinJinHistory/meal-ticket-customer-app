@@ -1,17 +1,17 @@
 import React, {useState} from 'react';
-import Header from "../../components/header";
+import Header from "../../../components/header";
 import {Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {commonStyles, theme} from "../../assets/styles/common-styles";
-import {AppImages} from "../../assets";
+import {commonStyles, theme} from "../../../assets/styles/common-styles";
+import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
-import {hideLoading, showLoading} from "../../util/action";
-import {charging} from "../../api/services/point-service";
-import {CommonResponse} from "../../api/models/responses/common-response.model";
-import {RequestChargingPointModel} from "../../api/models/requests/point/request-charging-point.model";
-import {useSelector} from "react-redux";
-import {RootState} from "../../redux/store/reducers";
-import {routes} from "../../routes";
+import {hideLoading, showLoading} from "../../../util/action";
+import {charging} from "../../../api/services/point-service";
+import {CommonResponse} from "../../../api/models/responses/common-response.model";
+import {RequestChargingPointModel} from "../../../api/models/requests/point/request-charging-point.model";
+import {routes} from "../../../routes";
 import {useNavigation} from "@react-navigation/native";
+import {useRecoilState} from "recoil";
+import {companyInfoState, userInfoState} from "../../../atoms/common-state";
 
 const keyboardKeys: Array<number | string | undefined> = [
 	1, 2, 3, 4, 5, 6, 7, 8, 9, undefined, 0, 'remove'
@@ -20,11 +20,11 @@ const keyboardKeys: Array<number | string | undefined> = [
 const PointCharging = () => {
 	const navigation = useNavigation<any>();
 
-	// redux에 저장 된 유저 uuid 가져오기
-	const userUuid = useSelector((state: RootState) => state.common.userUuid);
+	// 유저 로그인 정보
+	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
-	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+	// 회사 정보
+	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
 	const [inputValue, setInputValue] = useState<string>('');
 
@@ -116,8 +116,8 @@ const PointCharging = () => {
 		try {
 			// 로그인 요청 데이터 준비
 			const requestData: RequestChargingPointModel = {
-				user_uuid: userUuid,
-				company_uuid: selectedCompany.id,
+				user_uuid: userInfo,
+				company_uuid: companyInfo.id,
 				point: Number.parseInt(inputValue.replace(/[^0-9]/g, ''))
 			};
 

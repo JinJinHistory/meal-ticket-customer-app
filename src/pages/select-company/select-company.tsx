@@ -1,41 +1,37 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
 import {hideLoading, showLoading} from "../../util/action";
-import {useAppDispatch} from "../../redux/store";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {theme} from "../../assets/styles/common-styles";
 import {ResponseCompanyModel} from "../../api/models/responses/company/response-company.model";
-import {getCompanyList} from "../../api/services/company-service";
+import {doGetCompanyList} from "../../api/services/company-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import commonSlice from "../../redux/slices/common";
 import {useNavigation} from "@react-navigation/native";
 import {routes} from "../../routes";
-import {useSelector} from "react-redux";
-import {RootState} from "../../redux/store/reducers";
+import {useRecoilState} from "recoil";
+import {companyInfoState} from "../../atoms/common-state";
 
 export default function SelectCompany() {
 	const navigation = useNavigation<any>();
-	// dispatch 객체 생성
-	const dispatch = useAppDispatch();
 
-	// redux에 저장 된 회사 정보 가져오기
-	const reduxSelectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+	// 회사 정보
+	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
 	// 회사 목록
 	const [companyList, setCompanyList] = useState<Array<ResponseCompanyModel>>([]);
 
 	// 선택한 회사 정보
-	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>(reduxSelectedCompany);
+	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>(companyInfo);
 
 	// 회사 목록 조회
-	const getData = async () => {
+	const getCompanyList = async () => {
 		// 로딩 표시
 		showLoading();
 
 		try {
 			// 로그인 API 엔드포인트 URL
-			const response: CommonResponseData<Array<ResponseCompanyModel>> = await getCompanyList();
 
+			const response: CommonResponseData<Array<ResponseCompanyModel>> = await doGetCompanyList();
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
 				// 데이터가 존재할 경우
@@ -65,7 +61,7 @@ export default function SelectCompany() {
 
 		// selectedCompany 를 storage에 저장
 		await AsyncStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
-		dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: selectedCompany}));
+		setCompanyInfo(selectedCompany);
 		navigation.navigate(routes.HOME);
 	}
 
@@ -74,7 +70,7 @@ export default function SelectCompany() {
 	 */
 	useEffect(() => {
 		// 회사 목록 조회
-		getData();
+		getCompanyList();
 	}, []);
 
 	return (

@@ -1,38 +1,37 @@
 import React from 'react';
 import {StatusBar} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-import LoginView from './pages/login/Login';
-import {useSelector} from "react-redux";
-import {RootState} from "./redux/store/reducers";
+import LoginView from './pages/account/login/login';
 import {routes} from "./routes";
 import BuyListView from "./pages/ticket/buy-list/buy-list-view";
-import CreateReviewBlog from "./pages/tabs/create-review/create-review-blog/create-review-blog";
-import PointCharging from "./pages/point-charging/point-charging";
+import PointCharging from "./pages/point/point-charging/point-charging";
 import SelectCompany from "./pages/select-company/select-company";
-import HomeView from "./pages/home/HomeView";
+import Home from "./pages/home/home";
 import BuyDetail from "./pages/ticket/buy-detail";
+import {useRecoilState} from 'recoil';
+import {companyInfoState, userInfoState} from "./atoms/common-state";
 
 const Stack = createStackNavigator();
 
 export default () => {
-	// redux에 저장 된 유저 uuid 가져오기
-	const userUuid = useSelector((state: RootState) => state.common.userUuid);
+	// 유저 로그인 정보
+	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
-	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+	// 회사 정보
+	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
 	const renderView = () => {
-		// 유저 uuid가 존재하면 로그인 된 상태
-		if (userUuid) {
+		// 유저 정보(uuid)가 존재하면 로그인 된 상태
+		if (userInfo) {
 			// 회사 uuid가 존재하지 않으면 회사 선택 화면으로 이동
-			if (!selectedCompany.id) {
+			if (!companyInfo.id) {
 				return <Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>;
 			}
 			// 회사 uuid가 존재하면 탭 화면으로 이동
 			else {
 				return (
 					<>
-						<Stack.Screen name={routes.HOME} component={HomeView}/>
+						<Stack.Screen name={routes.HOME} component={Home}/>
 						<Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>
 					</>
 				);
@@ -56,7 +55,6 @@ export default () => {
 				{renderView()}
 				<Stack.Screen name={routes.TICKET_LIST} component={BuyListView}/>
 				<Stack.Screen name={routes.TICKET_BUY_DETAIL} component={BuyDetail}/>
-				<Stack.Screen name={routes.CREATE_REVIEW_BLOG} component={CreateReviewBlog}/>
 				<Stack.Screen name={routes.POINT_CHARGING} component={PointCharging}/>
 			</Stack.Navigator>
 		</>

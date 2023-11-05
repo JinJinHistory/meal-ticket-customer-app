@@ -250,7 +250,8 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -496,6 +497,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2DC65B5F96A4569167AAFFF8 /* Pods-react_native_ui_templates-react_native_ui_templatesTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -523,6 +525,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0949C85B2CD4FD3533C623A2 /* Pods-react_native_ui_templates-react_native_ui_templatesTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = react_native_ui_templatesTests/Info.plist;
@@ -553,7 +556,7 @@
 				DEVELOPMENT_TEAM = 8QNFPUPVMR;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = react_native_ui_templates/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "리뷰등록";
+				INFOPLIST_KEY_CFBundleDisplayName = "식권관리";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -564,7 +567,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.weplay.mealticketcustomerapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.weplay.mealticket;
 				PRODUCT_NAME = react_native_ui_templates;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -581,7 +584,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8QNFPUPVMR;
 				INFOPLIST_FILE = react_native_ui_templates/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "리뷰등록";
+				INFOPLIST_KEY_CFBundleDisplayName = "식권관리";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -592,7 +595,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.weplay.mealticketcustomerapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.weplay.mealticket;
 				PRODUCT_NAME = react_native_ui_templates;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

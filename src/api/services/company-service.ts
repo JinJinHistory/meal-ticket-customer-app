@@ -5,7 +5,8 @@ import {ResponseCompanyModel} from "../models/responses/company/response-company
 
 const COMPANY_URL: string = '/company';
 
-export const getCompanyList = async (): Promise<CommonResponseData<Array<ResponseCompanyModel>>> => {
+// 회사 목록 조회
+export const doGetCompanyList = async (): Promise<CommonResponseData<Array<ResponseCompanyModel>>> => {
 	try {
 		const response: AxiosResponse<CommonResponseData<Array<ResponseCompanyModel>>> = await instance.get<CommonResponseData<Array<ResponseCompanyModel>>>(`${COMPANY_URL}`);
 		return response.data;

@@ -7,29 +7,28 @@ import {hideLoading, showLoading} from "../../util/action";
 import {RequestGetPointModel} from "../../api/models/requests/point/request-get-point.model";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {doGetPoint} from "../../api/services/point-service";
-import {useSelector} from "react-redux";
-import {RootState} from "../../redux/store/reducers";
 import {doBuyCompanyTickets, doGetUserTickets} from "../../api/services/ticket-service";
 import {RequestBuyTicketModel} from "../../api/models/requests/ticket/request-buy-ticket.model";
 import {CommonResponse} from "../../api/models/responses/common-response.model";
 import {useNavigation} from "@react-navigation/native";
-import {useAppDispatch} from "../../redux/store";
-import commonSlice from "../../redux/slices/common";
-import {ResponseCompanyModel} from "../../api/models/responses/company/response-company.model";
 import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
+import {useRecoilState} from "recoil";
+import {companyInfoState, pointState, userInfoState, userTicketsState} from "../../atoms/common-state";
 
 const BuyDetail = ({route}: any) => {
-	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 
-	// redux에 저장 된 유저 uuid 가져오기
-	const userUuid = useSelector((state: RootState) => state.common.userUuid);
+	// 유저 로그인 정보
+	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
-	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany: ResponseCompanyModel = useSelector((state: RootState) => state.common.selectedCompany);
+	// 회사 정보
+	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
-	// redux에 저장 된 포인트 정보 가져오기
-	const point: number = useSelector((state: RootState) => state.common.point);
+	// 포인트 정보
+	const [point, setPoint] = useRecoilState(pointState);
+
+	// 유저 티켓 목록 정보
+	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
 
 	// 수량
 	const [count, setCount] = useState<number>(1);
@@ -47,7 +46,7 @@ const BuyDetail = ({route}: any) => {
 		try {
 			// 포인트 조회 요청 데이터 준비
 			const queryData: RequestGetPointModel = {
-				user_uuid: userUuid,
+				user_uuid: userInfo,
 				company_uuid: route.params.ticketItem.company_uuid
 			};
 
@@ -60,7 +59,7 @@ const BuyDetail = ({route}: any) => {
 				// 데이터가 존재할 경우
 				if (response.data || response.data === 0) {
 					console.log('데이터가 존재할 경우: ', response.data);
-					dispatch(commonSlice.actions.setPoint({point: response.data}));
+					setPoint(response.data);
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
@@ -102,8 +101,8 @@ const BuyDetail = ({route}: any) => {
 		try {
 			// 포이트 조회 요청 데이터 준비
 			const queryData: RequestGetPointModel = {
-				user_uuid: userUuid,
-				company_uuid: selectedCompany.id
+				user_uuid: userInfo,
+				company_uuid: companyInfo.id
 			};
 
 			// 로그인 API 엔드포인트 URL
@@ -116,7 +115,7 @@ const BuyDetail = ({route}: any) => {
 				if (response.data || response.data === 0) {
 					console.log('데이터가 존재할 경우: ', response.data);
 					// 유저 식권 목록 저장
-					dispatch(commonSlice.actions.setUserTickets({userTickets: response.data}));
+					setUserTickets(response.data);
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
@@ -138,7 +137,7 @@ const BuyDetail = ({route}: any) => {
 		try {
 			// 포인트 구매 요청 데이터 준비
 			const requestData: RequestBuyTicketModel = {
-				user_uuid: userUuid,
+				user_uuid: userInfo,
 				company_uuid: route.params.ticketItem.company_uuid,
 				ticket_uuid: route.params.ticketItem.ticket_uuid,
 				count: count

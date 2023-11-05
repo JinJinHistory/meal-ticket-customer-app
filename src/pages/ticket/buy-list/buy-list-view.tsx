@@ -3,15 +3,15 @@ import React, {useEffect} from 'react';
 import BuyItem from "./buy-Item";
 import {hideLoading, showLoading} from "../../../util/action";
 import Header from "../../../components/header";
-import {useSelector} from "react-redux";
-import {RootState} from "../../../redux/store/reducers";
 import {doGetCompanyTickets} from "../../../api/services/ticket-service";
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
 import {ResponseCompanyTicketModel} from "../../../api/models/responses/ticket/response-company-ticket.model";
+import {useRecoilState} from "recoil";
+import {companyInfoState} from "../../../atoms/common-state";
 
 const BuyListView = () => {
-	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany = useSelector((state: RootState) => state.common.selectedCompany);
+	// 회사 정보
+	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
 	// 리프레시 상태
 	const [refreshing, setRefreshing] = React.useState(false);
@@ -34,7 +34,7 @@ const BuyListView = () => {
 
 		try {
 			// 로그인 API 엔드포인트 URL
-			const response: CommonResponseData<Array<ResponseCompanyTicketModel>> = await doGetCompanyTickets(selectedCompany.id);
+			const response: CommonResponseData<Array<ResponseCompanyTicketModel>> = await doGetCompanyTickets(companyInfo.id);
 
 			// 응답에 성공했을 경우
 			if (response.status === 200) {

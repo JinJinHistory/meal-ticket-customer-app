@@ -6,7 +6,8 @@ import {AxiosResponse} from "axios";
 
 const ACCOUNT_URL: string = '/account';
 
-export const login = async (requestData: RequestAccountLogin): Promise<CommonResponseData<ResponseAccountLogin>> => {
+// 로그인 요청
+export const doLogin = async (requestData: RequestAccountLogin): Promise<CommonResponseData<ResponseAccountLogin>> => {
 	try {
 		const response: AxiosResponse<CommonResponseData<ResponseAccountLogin>> = await instance.post<CommonResponseData<ResponseAccountLogin>>(`${ACCOUNT_URL}/login`, requestData);
 		return response.data;

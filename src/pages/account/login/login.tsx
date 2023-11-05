@@ -1,25 +1,27 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, BackHandler, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {hideLoading, showLoading} from "../../util/action";
-import commonSlice from "../../redux/slices/common";
-import {useAppDispatch} from "../../redux/store";
-import {login} from "../../api/services/account-service";
-import {RequestAccountLogin} from "../../api/models/requests/account/request-account-login.model";
-import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
-import {ResponseAccountLogin} from "../../api/models/responses/account/response-account-login.model";
-import {theme} from "../../assets/styles/common-styles";
-import {AppImages} from "../../assets";
+import {hideLoading, showLoading} from "../../../util/action";
+import {doLogin} from "../../../api/services/account-service";
+import {RequestAccountLogin} from "../../../api/models/requests/account/request-account-login.model";
+import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
+import {ResponseAccountLogin} from "../../../api/models/responses/account/response-account-login.model";
+import {theme} from "../../../assets/styles/common-styles";
+import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
 import {useNavigation} from "@react-navigation/native";
+import {useRecoilState} from "recoil";
+import {userInfoState} from "../../../atoms/common-state";
 
 export default function LoginView() {
 	const navigation = useNavigation<any>();
 
-	// dispatch 객체 생성
-	const dispatch = useAppDispatch();
+	// 유저 로그인 정보
+	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+
 	// 아이디
 	const [email, setEmail] = useState<string>('');
+
 	// 비밀번호
 	const [password, setPassword] = useState<string>('');
 
@@ -46,7 +48,7 @@ export default function LoginView() {
 			};
 
 			// 로그인 API 엔드포인트 URL
-			const response: CommonResponseData<ResponseAccountLogin> = await login(requestData);
+			const response: CommonResponseData<ResponseAccountLogin> = await doLogin(requestData);
 
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
@@ -54,7 +56,7 @@ export default function LoginView() {
 				if (response.data) {
 					console.log('[로그인 성공]: ', response.data);
 					await AsyncStorage.setItem('userUuid', response.data.uuid);
-					dispatch(commonSlice.actions.setUserUuid({userUuid: response.data.uuid}));
+					setUserInfo(response.data.uuid);
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)

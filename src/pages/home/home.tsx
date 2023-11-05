@@ -1,6 +1,8 @@
 import {
 	Alert,
-	BackHandler, Modal, Pressable,
+	BackHandler,
+	Modal,
+	Pressable,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
@@ -11,16 +13,12 @@ import {
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {useAppDispatch} from '../../redux/store';
 import {hideLoading, showLoading} from "../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import commonSlice from "../../redux/slices/common";
 import {routes} from "../../routes";
 import {commonStyles, theme} from "../../assets/styles/common-styles";
 import {AppImages} from "../../assets";
 import {WithLocalSvg} from "react-native-svg";
-import {useSelector} from "react-redux";
-import {RootState} from "../../redux/store/reducers";
 import StatusBarSize from "../../components/status-bar-size";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {RequestGetPointModel} from "../../api/models/requests/point/request-get-point.model";
@@ -29,24 +27,24 @@ import {addComma} from "../../util/format";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {doGetUserTickets} from "../../api/services/ticket-service";
 import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
-import {ResponseCompanyModel} from "../../api/models/responses/company/response-company.model";
 import QRCode from "react-native-qrcode-svg";
+import {useRecoilState} from 'recoil';
+import {companyInfoState, pointState, userInfoState, userTicketsState} from "../../atoms/common-state";
 
-const HomeView = () => {
-	const dispatch = useAppDispatch();
+const Home = () => {
 	const navigation = useNavigation<any>();
 
-	// redux에 저장 된 유저 uuid 가져오기
-	const userUuid: string = useSelector((state: RootState) => state.common.userUuid);
+	// 유저 로그인 정보
+	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
-	// redux에 저장 된 회사 정보 가져오기
-	const selectedCompany: ResponseCompanyModel = useSelector((state: RootState) => state.common.selectedCompany);
+	// 회사 정보
+	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
-	// redux에 저장 된 포인트 정보 가져오기
-	const point: number = useSelector((state: RootState) => state.common.point);
+	// 포인트 정보
+	const [point, setPoint] = useRecoilState(pointState);
 
-	// redux에 저장 된 내 식권 목록 정보 가져오기
-	const userTickets: Array<ResponseUserTicketModel> = useSelector((state: RootState) => state.common.userTickets);
+	// 유저 티켓 목록 정보
+	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
 
 	// 선택한 식권의 정보
 	const [selectedTicket, setSelectedTicket] = useState<ResponseUserTicketModel>({ qr_id: '', name: '', price: 0 });
@@ -79,8 +77,8 @@ const HomeView = () => {
 		try {
 			// 포이트 조회 요청 데이터 준비
 			const queryData: RequestGetPointModel = {
-				user_uuid: userUuid,
-				company_uuid: selectedCompany.id
+				user_uuid: userInfo,
+				company_uuid: companyInfo.id
 			};
 
 			// 로그인 API 엔드포인트 URL
@@ -93,7 +91,7 @@ const HomeView = () => {
 				if (response.data || response.data === 0) {
 					console.log('데이터가 존재할 경우: ', response.data);
 					// 포인트 저장
-					dispatch(commonSlice.actions.setPoint({point: response.data}));
+					setPoint(response.data);
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
@@ -118,8 +116,8 @@ const HomeView = () => {
 		try {
 			// 포이트 조회 요청 데이터 준비
 			const queryData: RequestGetPointModel = {
-				user_uuid: userUuid,
-				company_uuid: selectedCompany.id
+				user_uuid: userInfo,
+				company_uuid: companyInfo.id
 			};
 
 			// 로그인 API 엔드포인트 URL
@@ -132,7 +130,7 @@ const HomeView = () => {
 				if (response.data || response.data === 0) {
 					console.log('데이터가 존재할 경우: ', response.data);
 					// 유저 식권 목록 저장
-					dispatch(commonSlice.actions.setUserTickets({userTickets: response.data}));
+					setUserTickets(response.data);
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
@@ -180,8 +178,8 @@ const HomeView = () => {
 					text: '확인', onPress: () => {
 						// storage 초기화
 						AsyncStorage.clear();
-						dispatch(commonSlice.actions.setUserUuid({userUuid: ''}));
-						dispatch(commonSlice.actions.setCompanyUuid({selectedCompany: {id: '', name: ''}}));
+						setUserInfo('');
+						setCompanyInfo({id: '', name: ''});
 					}
 				},
 			],
@@ -200,7 +198,7 @@ const HomeView = () => {
 	}
 
 	useEffect(() => {
-		console.log('HomeView mounted');
+		console.log('Home mounted');
 
 		// 뒤로 가기 이벤트 리스너 등록
 		const backAction = () => {
@@ -234,7 +232,7 @@ const HomeView = () => {
 
 		// 유저 식권 조회
 		getUserTickets();
-	}, [selectedCompany]);
+	}, [companyInfo]);
 
 	return (
 		<SafeAreaView style={{flex: 1}}>
@@ -249,7 +247,7 @@ const HomeView = () => {
 						}}
 					>
 						<WithLocalSvg asset={AppImages.iconMarker} width="15" height="15"/>
-						<Text style={styles.companyCardText}>{selectedCompany.name}</Text>
+						<Text style={styles.companyCardText}>{companyInfo.name}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						onPress={onLogoutPress}
@@ -496,4 +494,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default HomeView;
+export default Home;
