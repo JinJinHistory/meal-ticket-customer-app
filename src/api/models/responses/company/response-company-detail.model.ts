@@ -1,5 +1,3 @@
-import {ResponseCompanyModel} from "./response-company.model";
-
 export class ResponseCompanyDetailModel {
 	// 은행명
 	public bank_name: string = '';
