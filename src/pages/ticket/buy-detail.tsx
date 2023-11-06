@@ -149,10 +149,10 @@ const BuyDetail = ({route}: any) => {
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
 				// 포인트 조회
-				getPoint();
+				await getPoint();
 
 				// 유저 식권 조회
-				getUserTickets();
+				await getUserTickets();
 
 				// 구매성공 메세지 출력 후 확인 클릭 시 뒤로가기
 				Alert.alert('구매 성공', '구매가 완료되었습니다.', [

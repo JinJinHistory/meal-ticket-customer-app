@@ -5,4 +5,6 @@ export class RequestAccountSignupModel extends RequestAccountUserSignupModel {
 	public bank_name: string = '';
 	// 계좌번호
 	public account_number: string = '';
+	// 예금주
+	public account_holder: string = '';
 }

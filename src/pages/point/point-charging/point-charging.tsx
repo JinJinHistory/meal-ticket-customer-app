@@ -12,6 +12,9 @@ import {routes} from "../../../routes";
 import {useNavigation} from "@react-navigation/native";
 import {useRecoilState} from "recoil";
 import {companyInfoState, userInfoState} from "../../../atoms/common-state";
+import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
+import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
+import {doGetCompany} from "../../../api/services/company-service";
 
 const keyboardKeys: Array<number | string | undefined> = [
 	1, 2, 3, 4, 5, 6, 7, 8, 9, undefined, 0, 'remove'
@@ -27,6 +30,47 @@ const PointCharging = () => {
 	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
 	const [inputValue, setInputValue] = useState<string>('');
+
+	// 회사 조회
+	const getCompany = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 로그인 API 엔드포인트 URL
+			const response: CommonResponseData<ResponseCompanyDetailModel> = await doGetCompany(companyInfo.id);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				console.log('response: ', response);
+				// 데이터가 존재할 경우
+				if (response.data) {
+					console.log('데이터가 존재할 경우: ', response.data);
+
+					// 성공 메시지 출력
+					Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 입금 후 관리자에게 연락주세요.\n\n업장명: ${response.data.name}\n입금은행: ${response.data.bank_name}\n계좌번호: ${response.data.account_number}\n예금주: ${response.data.account_holder}\n전화번호: ${response.data.phone_number}`, [
+						{
+							text: '확인',
+							onPress: () => {
+								console.log('확인');
+								// 포인트 충전 완료 후 메인 화면으로 이동
+								navigation.navigate(routes.HOME);
+							}
+						}
+					]);
+				}
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('회사 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+		}
+	}
 
 	const handleKeyPress = (key: number | string | undefined): void => {
 		// 입력값에서 쉼표(,)와 숫자 이외의 문자를 제거합니다.
@@ -126,17 +170,8 @@ const PointCharging = () => {
 
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
-				Alert.alert('포인트 충전', response.message + '\n메인 화면으로 이동합니다.', [
-					{
-						text: '확인',
-						onPress: () => {
-							console.log('확인');
-							// 포인트 충전 완료 후 메인 화면으로 이동
-							navigation.navigate(routes.HOME);
-						}
-					}
-
-				]);
+				// 회사 상세 정보 조회
+				await getCompany();
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
 				Alert.alert('포인트 충전 실패', response.message);
