@@ -151,9 +151,12 @@ const Home = () => {
 					style: 'cancel',
 				},
 				{
-					text: '확인', onPress: () => {
+					text: '확인', onPress: async () => {
+						// 로딩 표시
+						showLoading();
+
 						// storage 초기화
-						AsyncStorage.clear();
+						await AsyncStorage.clear();
 						setUserInfo('');
 						setCompanyInfo({id: '', name: ''});
 						setPoint(0);
@@ -161,6 +164,9 @@ const Home = () => {
 						setUserTicketsRefresh(false);
 						setPointHistoryList([]);
 						setPointListHistoryRefresh(false);
+
+						// 로딩 숨기기
+						hideLoading();
 					}
 				},
 			],
@@ -293,10 +299,13 @@ const Home = () => {
 	 * 초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회
 	 */
 	useEffect(() => {
-		// 포인트 조회
-		companyInfo.id && getPoint();
-		getPointList();
-		getUserTickets();
+		// promiseAll
+		companyInfo.id &&
+		Promise.all([
+			getPoint(),
+			getPointList(),
+			getUserTickets()
+		]);
 	}, [companyInfo]);
 
 	return (

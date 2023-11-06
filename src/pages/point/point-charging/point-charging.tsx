@@ -20,6 +20,7 @@ import {
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
 import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 import {doGetCompany} from "../../../api/services/company-service";
+import {addComma} from "../../../util/format";
 
 const keyboardKeys: Array<number | string | undefined> = [
 	1, 2, 3, 4, 5, 6, 7, 8, 9, undefined, 0, 'remove'
@@ -56,7 +57,7 @@ const PointCharging = () => {
 					console.log('데이터가 존재할 경우: ', response.data);
 
 					// 성공 메시지 출력
-					Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 ${inputValue.replace(/[^0-9]/g, '')}원을 입금 후\n관리자에게 연락주세요.\n\n업장명: ${response.data.name}\n입금은행: ${response.data.bank_name}\n계좌번호: ${response.data.account_number}\n예금주: ${response.data.account_holder}\n전화번호: ${response.data.phone_number}`, [
+					Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 ${addComma(Number.parseInt(inputValue.replace(/[^0-9]/g, '')))}원을 입금 후\n관리자에게 연락주세요.\n\n업장명: ${response.data.name}\n입금은행: ${response.data.bank_name}\n계좌번호: ${response.data.account_number}\n예금주: ${response.data.account_holder}\n전화번호: ${response.data.phone_number}`, [
 						{
 							text: '확인',
 							onPress: () => {
