@@ -11,7 +11,12 @@ import {RequestChargingPointModel} from "../../../api/models/requests/point/requ
 import {routes} from "../../../routes";
 import {useNavigation} from "@react-navigation/native";
 import {useRecoilState} from "recoil";
-import {companyInfoState, userInfoState} from "../../../atoms/common-state";
+import {
+	companyInfoState,
+	pointListHistoryRefreshState, pointListHistoryState,
+	userInfoState,
+	userTicketsRefreshState
+} from "../../../atoms/common-state";
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
 import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 import {doGetCompany} from "../../../api/services/company-service";
@@ -29,6 +34,9 @@ const PointCharging = () => {
 	// 회사 정보
 	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
 
+	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
+	const [pointListHistoryRefresh, setPointListHistoryRefresh] = useRecoilState(pointListHistoryRefreshState);
+
 	const [inputValue, setInputValue] = useState<string>('');
 
 	// 회사 조회
@@ -37,7 +45,7 @@ const PointCharging = () => {
 		showLoading();
 
 		try {
-			// 로그인 API 엔드포인트 URL
+			// 회사 조회 API 엔드포인트 URL
 			const response: CommonResponseData<ResponseCompanyDetailModel> = await doGetCompany(companyInfo.id);
 
 			// 응답에 성공했을 경우
@@ -48,7 +56,7 @@ const PointCharging = () => {
 					console.log('데이터가 존재할 경우: ', response.data);
 
 					// 성공 메시지 출력
-					Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 입금 후 관리자에게 연락주세요.\n\n업장명: ${response.data.name}\n입금은행: ${response.data.bank_name}\n계좌번호: ${response.data.account_number}\n예금주: ${response.data.account_holder}\n전화번호: ${response.data.phone_number}`, [
+					Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 ${inputValue.replace(/[^0-9]/g, '')}원을 입금 후\n관리자에게 연락주세요.\n\n업장명: ${response.data.name}\n입금은행: ${response.data.bank_name}\n계좌번호: ${response.data.account_number}\n예금주: ${response.data.account_holder}\n전화번호: ${response.data.phone_number}`, [
 						{
 							text: '확인',
 							onPress: () => {
@@ -165,11 +173,14 @@ const PointCharging = () => {
 				point: Number.parseInt(inputValue.replace(/[^0-9]/g, ''))
 			};
 
-			// 로그인 API 엔드포인트 URL
+			// 포인트 충전 요청 API 엔드포인트 URL
 			const response: CommonResponse = await charging(requestData);
 
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
+				// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보 변경
+				setPointListHistoryRefresh(true);
+
 				// 회사 상세 정보 조회
 				await getCompany();
 			} else {
@@ -184,8 +195,6 @@ const PointCharging = () => {
 			hideLoading();
 		}
 	}
-
-	console.log(navigation.getState());
 
 	return (
 		<SafeAreaView style={{flex: 1}}>

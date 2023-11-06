@@ -22,8 +22,11 @@ import {doGetUserTickets} from "../../../api/services/ticket-service";
 import {RequestGetPointModel} from "../../../api/models/requests/point/request-get-point.model";
 import {theme} from "../../../assets/styles/common-styles";
 import {useRecoilState} from "recoil";
-import {userTicketsState} from "../../../atoms/common-state";
+import {userTicketsRefreshState, userTicketsState} from "../../../atoms/common-state";
 import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
+import {
+	panGestureHandlerCustomNativeProps
+} from "react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler";
 
 type Props = {
 	userInfo: string;
@@ -43,6 +46,9 @@ const MyTicketList = ({ userInfo, companyInfo }: Props) => {
 	// 리프레시 상태
 	const [refreshing, setRefreshing] = useState<boolean>(false);
 
+	// 유저 티켓 목록 정보 리프레시 여부 정보
+	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
+
 	// 리프레시 이벤트
 	const onRefresh = useCallback((): void => {
 		setRefreshing(true);
@@ -59,27 +65,28 @@ const MyTicketList = ({ userInfo, companyInfo }: Props) => {
 		showLoading();
 
 		try {
-			// 포이트 조회 요청 데이터 준비
+			// 포인트 조회 요청 데이터 준비
 			const queryData: RequestGetPointModel = {
 				user_uuid: userInfo,
 				company_uuid: companyInfo.id
 			};
 
-			// 로그인 API 엔드포인트 URL
+			// 유저 식권 조회 API 엔드포인트 URL
 			const response: CommonResponseData<Array<ResponseUserTicketModel>> = await doGetUserTickets(queryData);
 
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
 				console.log('response: ', response);
 				// 데이터가 존재할 경우
-				if (response.data || response.data === 0) {
+				if (response.data) {
 					console.log('데이터가 존재할 경우: ', response.data);
 					// 유저 식권 목록 저장
 					setUserTickets(response.data);
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
-				Alert.alert('유저 식권 조회 실패', response.message);
+				Alert.alert('' +
+					'유저 식권 조회 실패', response.message);
 			}
 		} catch (error) {
 			console.error('네트워크 오류', error);
@@ -87,6 +94,9 @@ const MyTicketList = ({ userInfo, companyInfo }: Props) => {
 		} finally {
 			// 로딩 숨기기
 			hideLoading();
+
+			// 유저 티켓 목록 정보 리프레시 여부 정보 변경
+			setUserTicketsRefresh(false);
 		}
 	}
 
@@ -104,8 +114,8 @@ const MyTicketList = ({ userInfo, companyInfo }: Props) => {
 	 */
 	useEffect(() => {
 		// 유저 식권 조회
-		getUserTickets();
-	}, [companyInfo]);
+		userTicketsRefresh && getUserTickets();
+	}, [userTicketsRefresh]);
 
 	return (
 		<>
@@ -292,4 +302,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default MyTicketList;
+export default React.memo(MyTicketList);

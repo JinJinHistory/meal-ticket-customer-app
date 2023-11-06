@@ -7,13 +7,12 @@ import {hideLoading, showLoading} from "../../util/action";
 import {RequestGetPointModel} from "../../api/models/requests/point/request-get-point.model";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {doGetPoint} from "../../api/services/point-service";
-import {doBuyCompanyTickets, doGetUserTickets} from "../../api/services/ticket-service";
+import {doBuyCompanyTickets} from "../../api/services/ticket-service";
 import {RequestBuyTicketModel} from "../../api/models/requests/ticket/request-buy-ticket.model";
 import {CommonResponse} from "../../api/models/responses/common-response.model";
 import {useNavigation} from "@react-navigation/native";
-import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
 import {useRecoilState} from "recoil";
-import {companyInfoState, pointState, userInfoState, userTicketsState} from "../../atoms/common-state";
+import {companyInfoState, pointState, userInfoState, userTicketsRefreshState} from "../../atoms/common-state";
 
 const BuyDetail = ({route}: any) => {
 	const navigation = useNavigation<any>();
@@ -27,8 +26,8 @@ const BuyDetail = ({route}: any) => {
 	// 포인트 정보
 	const [point, setPoint] = useRecoilState(pointState);
 
-	// 유저 티켓 목록 정보
-	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
+	// 유저 티켓 목록 정보 리프레시 여부 정보
+	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
 
 	// 수량
 	const [count, setCount] = useState<number>(1);
@@ -50,7 +49,7 @@ const BuyDetail = ({route}: any) => {
 				company_uuid: route.params.ticketItem.company_uuid
 			};
 
-			// 로그인 API 엔드포인트 URL
+			// 포인트 조회 API 엔드포인트 URL
 			const response: CommonResponseData<number> = await doGetPoint(queryData);
 
 			// 응답에 성공했을 경우
@@ -91,45 +90,6 @@ const BuyDetail = ({route}: any) => {
 		);
 	}
 
-	/**
-	 * 유저 식권 조회
-	 */
-	const getUserTickets = async () => {
-		// 로딩 표시
-		showLoading();
-
-		try {
-			// 포이트 조회 요청 데이터 준비
-			const queryData: RequestGetPointModel = {
-				user_uuid: userInfo,
-				company_uuid: companyInfo.id
-			};
-
-			// 로그인 API 엔드포인트 URL
-			const response: CommonResponseData<Array<ResponseUserTicketModel>> = await doGetUserTickets(queryData);
-
-			// 응답에 성공했을 경우
-			if (response.status === 200) {
-				console.log('response: ', response);
-				// 데이터가 존재할 경우
-				if (response.data || response.data === 0) {
-					console.log('데이터가 존재할 경우: ', response.data);
-					// 유저 식권 목록 저장
-					setUserTickets(response.data);
-				}
-			} else {
-				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
-				Alert.alert('유저 식권 조회 실패', response.message);
-			}
-		} catch (error) {
-			console.error('네트워크 오류', error);
-			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
-		} finally {
-			// 로딩 숨기기
-			hideLoading();
-		}
-	}
-
 	const buyTicket = async () => {
 		// 로딩 표시
 		showLoading();
@@ -151,8 +111,8 @@ const BuyDetail = ({route}: any) => {
 				// 포인트 조회
 				await getPoint();
 
-				// 유저 식권 조회
-				await getUserTickets();
+				// 유저 티켓 목록 정보 리프레시 여부 정보 변경
+				setUserTicketsRefresh(true);
 
 				// 구매성공 메세지 출력 후 확인 클릭 시 뒤로가기
 				Alert.alert('구매 성공', '구매가 완료되었습니다.', [

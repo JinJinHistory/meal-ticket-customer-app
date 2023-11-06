@@ -8,8 +8,14 @@ import {doGetCompanyList} from "../../api/services/company-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useNavigation} from "@react-navigation/native";
 import {routes} from "../../routes";
-import {useRecoilState} from "recoil";
-import {companyInfoState} from "../../atoms/common-state";
+import {useRecoilState, useResetRecoilState} from "recoil";
+import {
+	companyInfoState, pointListHistoryRefreshState,
+	pointListHistoryState,
+	pointState, userInfoState,
+	userTicketsRefreshState,
+	userTicketsState
+} from "../../atoms/common-state";
 
 export default function SelectCompany() {
 	const navigation = useNavigation<any>();
@@ -23,13 +29,28 @@ export default function SelectCompany() {
 	// 선택한 회사 정보
 	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>(companyInfo);
 
+	// 포인트 정보
+	const [point, setPoint] = useRecoilState(pointState);
+
+	// 유저 티켓 목록 정보
+	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
+
+	// 유저 티켓 목록 정보 리프레시 여부 정보
+	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
+
+	// 포인트 충전 요청/승인 목록 정보
+	const [pointHistoryList, setPointHistoryList] = useRecoilState(pointListHistoryState);
+
+	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
+	const [pointListHistoryRefresh, setPointListHistoryRefresh] = useRecoilState(pointListHistoryRefreshState);
+
 	// 회사 목록 조회
 	const getCompanyList = async () => {
 		// 로딩 표시
 		showLoading();
 
 		try {
-			// 로그인 API 엔드포인트 URL
+			// 회사 목록 조회 API 엔드포인트 URL
 			const response: CommonResponseData<Array<ResponseCompanyModel>> = await doGetCompanyList();
 			// 응답에 성공했을 경우
 			if (response.status === 200) {
@@ -58,10 +79,28 @@ export default function SelectCompany() {
 			return;
 		}
 
+		// 로딩 표시
+		showLoading();
+
+		// 현재 선택된 업장과 동일한 업장일 경우 홈으로 아무런 처리 없이 이동
+		if (companyInfo.id === selectedCompany.id) {
+			navigation.navigate(routes.HOME);
+			// 로딩 숨기기
+			hideLoading();
+			return;
+		}
 		// selectedCompany 를 storage 에 저장
-		console.log('selectedCompany: ', selectedCompany);
 		await AsyncStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
 		setCompanyInfo(selectedCompany);
+
+		setPoint(0);
+		setUserTickets([]);
+		setUserTicketsRefresh(false);
+		setPointHistoryList([]);
+		setPointListHistoryRefresh(false);
+
+		// 로딩 숨기기
+		hideLoading();
 		navigation.navigate(routes.HOME);
 	}
 

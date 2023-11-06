@@ -33,7 +33,7 @@ const BuyListView = () => {
 		showLoading();
 
 		try {
-			// 로그인 API 엔드포인트 URL
+			// 회사 식권 조회 요청 API 엔드포인트 URL
 			const response: CommonResponseData<Array<ResponseCompanyTicketModel>> = await doGetCompanyTickets(companyInfo.id);
 
 			// 응답에 성공했을 경우

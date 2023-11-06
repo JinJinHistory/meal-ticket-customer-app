@@ -1,5 +1,14 @@
-import {Alert, BackHandler, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
-import React, {useEffect} from 'react';
+import {
+	Alert,
+	BackHandler,
+	SafeAreaView,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	useWindowDimensions,
+	View,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {hideLoading, showLoading} from "../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,15 +19,49 @@ import {WithLocalSvg} from "react-native-svg";
 import StatusBarSize from "../../components/status-bar-size";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {RequestGetPointModel} from "../../api/models/requests/point/request-get-point.model";
-import {doGetPoint} from "../../api/services/point-service";
+import {doGetPoint, doGetPointList} from "../../api/services/point-service";
 import {addComma} from "../../util/format";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {useRecoilState} from 'recoil';
-import {companyInfoState, pointState, userInfoState} from "../../atoms/common-state";
+import {useRecoilState, useResetRecoilState} from 'recoil';
+import {
+	companyInfoState,
+	pointListHistoryRefreshState,
+	pointListHistoryState,
+	pointState,
+	userInfoState,
+	userTicketsRefreshState,
+	userTicketsState
+} from "../../atoms/common-state";
 import MyTicketList from "../ticket/my-ticket-list/my-ticket-list";
+import {SceneMap, TabBar, TabView} from "react-native-tab-view";
+import PointChargingHistoryList from "../point/point-charging-history/point-charging-history-list";
+import {CommonListModel} from "../../api/models/responses/common-list.model";
+import {ResponsePointHistoryListModel} from "../../api/models/responses/point/response-point-history-list.model";
+import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
+import {doGetUserTickets} from "../../api/services/ticket-service";
 
 const Home = () => {
 	const navigation = useNavigation<any>();
+	const layout = useWindowDimensions();
+
+	const [tabIndex, setTabIndex] = useState<number>(0);
+	const [tabRoutes] = useState<Array<{key: string, title: string}>>([
+		{ key: 'first', title: '보유 식권 목록' },
+		{ key: 'second', title: '충전 요청 기록' },
+	]);
+
+	const FirstRoute = () => (
+		<MyTicketList userInfo={userInfo} companyInfo={companyInfo} />
+	);
+
+	const SecondRoute = () => (
+		<PointChargingHistoryList userInfo={userInfo} companyInfo={companyInfo} />
+	);
+
+	const renderScene = SceneMap({
+		first: FirstRoute,
+		second: SecondRoute,
+	});
 
 	// 유저 로그인 정보
 	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
@@ -28,6 +71,18 @@ const Home = () => {
 
 	// 포인트 정보
 	const [point, setPoint] = useRecoilState(pointState);
+
+	// 유저 티켓 목록 정보
+	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
+
+	// 유저 티켓 목록 정보 리프레시 여부 정보
+	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
+
+	// 포인트 충전 요청/승인 목록 정보
+	const [pointHistoryList, setPointHistoryList] = useRecoilState(pointListHistoryState);
+
+	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
+	const [pointListHistoryRefresh, setPointListHistoryRefresh] = useRecoilState(pointListHistoryRefreshState);
 
 	// 포인트 조회
 	const getPoint = async () => {
@@ -41,7 +96,7 @@ const Home = () => {
 				company_uuid: companyInfo.id
 			};
 
-			// 로그인 API 엔드포인트 URL
+			// 포인트 조회 API 엔드포인트 URL
 			const response: CommonResponseData<number> = await doGetPoint(queryData);
 
 			// 응답에 성공했을 경우
@@ -101,6 +156,11 @@ const Home = () => {
 						AsyncStorage.clear();
 						setUserInfo('');
 						setCompanyInfo({id: '', name: ''});
+						setPoint(0);
+						setUserTickets([]);
+						setUserTicketsRefresh(false);
+						setPointHistoryList([]);
+						setPointListHistoryRefresh(false);
 					}
 				},
 			],
@@ -135,11 +195,108 @@ const Home = () => {
 	}, []);
 
 	/**
+	 * 포인트 충전 요청/승인 목록 조회
+	 */
+	const getPointList = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 포이트 조회 요청 데이터 준비
+			const queryData: {
+				skip: number,
+				take: number,
+				sort: 'DESC',
+				option: '',
+				search: ''
+			} = {
+				skip: 0,
+				// express max int Todo: 추후 infinite scroll로 변경
+				take: 9007199254740991,
+				sort: 'DESC',
+				option: '',
+				search: ''
+			};
+
+			// 포인트 충전 요청/승인 목록 조회 API 엔드포인트 URL
+			const response: CommonResponseData<CommonListModel<ResponsePointHistoryListModel>> = await doGetPointList(companyInfo.id, queryData);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				console.log('response: ', response);
+				// 데이터가 존재할 경우
+				if (response.data && response.data.items) {
+					console.log('데이터가 존재할 경우: ', response.data.items);
+					// 포인트 충전 요청/승인 목록 세팅
+					setPointHistoryList(response.data.items);
+				}
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('포인트 충전 요청/승인 목록 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+
+			// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보 변경
+			setPointListHistoryRefresh(false);
+		}
+	}
+
+	/**
+	 * 유저 식권 조회
+	 */
+	const getUserTickets = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 포인트 조회 요청 데이터 준비
+			const queryData: RequestGetPointModel = {
+				user_uuid: userInfo,
+				company_uuid: companyInfo.id
+			};
+
+			// 유저 식권 조회 API 엔드포인트 URL
+			const response: CommonResponseData<Array<ResponseUserTicketModel>> = await doGetUserTickets(queryData);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				console.log('response: ', response);
+				// 데이터가 존재할 경우
+				if (response.data) {
+					console.log('데이터가 존재할 경우: ', response.data);
+					// 유저 식권 목록 저장
+					setUserTickets(response.data);
+				}
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('' +
+					'유저 식권 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+
+			// 유저 티켓 목록 정보 리프레시 여부 정보 변경
+			setUserTicketsRefresh(false);
+		}
+	}
+
+	/**
 	 * 초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회
 	 */
 	useEffect(() => {
 		// 포인트 조회
-		getPoint();
+		companyInfo.id && getPoint();
+		getPointList();
+		getUserTickets();
 	}, [companyInfo]);
 
 	return (
@@ -202,17 +359,28 @@ const Home = () => {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingBottom: 5, gap: 5}}>
-					{/*@ts-ignore*/}
-					<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: '#333'}} />
-					<Text style={{fontSize: 14, fontWeight: '700', color: '#333' }}>나의 식권 목록</Text>
-				</View>
-				<MyTicketList userInfo={userInfo} companyInfo={companyInfo} />
+				{/*<View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingBottom: 5, gap: 5}}>*/}
+				{/*	/!*@ts-ignore*!/*/}
+				{/*	<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: '#333'}} />*/}
+				{/*	<Text style={{fontSize: 14, fontWeight: '700', color: '#333' }}>나의 식권 목록</Text>*/}
+				{/*</View>*/}
+				<TabView
+					navigationState={{ index: tabIndex, routes: tabRoutes }}
+					renderScene={renderScene}
+					onIndexChange={setTabIndex}
+					initialLayout={{ width: layout.width }}
+					renderTabBar={(props: any) => {
+						return <TabBar
+							{...props}
+							indicatorStyle={{ backgroundColor: 'white' }}
+							style={{ backgroundColor: theme.primaryColor, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+						/>
+					}}
+				/>
 			</View>
 		</SafeAreaView>
 	);
 };
-
 const styles = StyleSheet.create({
 	shadowWrap: {
 		backgroundColor: '#fff',

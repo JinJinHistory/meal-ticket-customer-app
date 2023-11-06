@@ -11,7 +11,6 @@ import BuyDetail from "./pages/ticket/buy-detail";
 import {useRecoilState} from 'recoil';
 import {companyInfoState, userInfoState} from "./atoms/common-state";
 import SignUpView from "./pages/account/sign-up/sign-up";
-import ChargingHistoryList from "./pages/point/point-charging-history/charging-history-list";
 
 const Stack = createStackNavigator();
 
@@ -59,7 +58,6 @@ export default () => {
 				<Stack.Screen name={routes.TICKET_LIST} component={BuyListView}/>
 				<Stack.Screen name={routes.TICKET_BUY_DETAIL} component={BuyDetail}/>
 				<Stack.Screen name={routes.POINT_CHARGING} component={PointCharging}/>
-				<Stack.Screen name={routes.POINT_CHARGING_HISTORY_LIST} component={ChargingHistoryList}/>
 			</Stack.Navigator>
 		</>
 	);
