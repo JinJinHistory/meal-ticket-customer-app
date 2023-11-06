@@ -1,17 +1,5 @@
-import {
-	Alert,
-	BackHandler,
-	Modal,
-	Pressable,
-	RefreshControl,
-	SafeAreaView,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, BackHandler, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
+import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {hideLoading, showLoading} from "../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,11 +13,9 @@ import {RequestGetPointModel} from "../../api/models/requests/point/request-get-
 import {doGetPoint} from "../../api/services/point-service";
 import {addComma} from "../../util/format";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {doGetUserTickets} from "../../api/services/ticket-service";
-import {ResponseUserTicketModel} from "../../api/models/responses/ticket/response-user-ticket.model";
-import QRCode from "react-native-qrcode-svg";
 import {useRecoilState} from 'recoil';
-import {companyInfoState, pointState, userInfoState, userTicketsState} from "../../atoms/common-state";
+import {companyInfoState, pointState, userInfoState} from "../../atoms/common-state";
+import MyTicketList from "../ticket/my-ticket-list/my-ticket-list";
 
 const Home = () => {
 	const navigation = useNavigation<any>();
@@ -42,32 +28,6 @@ const Home = () => {
 
 	// 포인트 정보
 	const [point, setPoint] = useRecoilState(pointState);
-
-	// 유저 티켓 목록 정보
-	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
-
-	// 선택한 식권의 정보
-	const [selectedTicket, setSelectedTicket] = useState<ResponseUserTicketModel>({ qr_id: '', name: '', price: 0 });
-
-	// 모달 상태
-	const [modalVisible, setModalVisible] = useState<boolean>(false);
-
-	// 리프레시 상태
-	const [refreshing, setRefreshing] = useState<boolean>(false);
-
-	// 리프레시 이벤트
-	const onRefresh = useCallback((): void => {
-		setRefreshing(true);
-
-		// 유저 식권 조회 후 리프레시 종료
-		getUserTickets().then(() => setRefreshing(false));
-
-		// // 포인트와 유저 식권이 조회된 후 리프레시 종료
-		// Promise.all([
-		// 	getPoint(),
-		// 	getUserTickets()
-		// ]).then(() => setRefreshing(false));
-	}, [companyInfo]);
 
 	// 포인트 조회
 	const getPoint = async () => {
@@ -96,45 +56,6 @@ const Home = () => {
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
 				Alert.alert('포인트 조회 실패', response.message);
-			}
-		} catch (error) {
-			console.error('네트워크 오류', error);
-			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
-		} finally {
-			// 로딩 숨기기
-			hideLoading();
-		}
-	}
-
-	/**
-	 * 유저 식권 조회
-	 */
-	const getUserTickets = async () => {
-		// 로딩 표시
-		showLoading();
-
-		try {
-			// 포이트 조회 요청 데이터 준비
-			const queryData: RequestGetPointModel = {
-				user_uuid: userInfo,
-				company_uuid: companyInfo.id
-			};
-
-			// 로그인 API 엔드포인트 URL
-			const response: CommonResponseData<Array<ResponseUserTicketModel>> = await doGetUserTickets(queryData);
-
-			// 응답에 성공했을 경우
-			if (response.status === 200) {
-				console.log('response: ', response);
-				// 데이터가 존재할 경우
-				if (response.data || response.data === 0) {
-					console.log('데이터가 존재할 경우: ', response.data);
-					// 유저 식권 목록 저장
-					setUserTickets(response.data);
-				}
-			} else {
-				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
-				Alert.alert('유저 식권 조회 실패', response.message);
 			}
 		} catch (error) {
 			console.error('네트워크 오류', error);
@@ -188,15 +109,6 @@ const Home = () => {
 		return true;
 	}
 
-	// 식권 클릭 이벤트
-	const onTicketPress = (ticket: ResponseUserTicketModel) => {
-		// 선택한 식권 정보 세팅
-		setSelectedTicket(ticket);
-
-		// 모달 오픈
-		setModalVisible(true);
-	}
-
 	useEffect(() => {
 		console.log('Home mounted');
 
@@ -226,15 +138,8 @@ const Home = () => {
 	 * 초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회
 	 */
 	useEffect(() => {
-		console.log('초기 렌더링 시 포인트 조회, 회사 아이디 변경 시 포인트 조회');
 		// 포인트 조회
 		getPoint();
-
-		// 유저 식권 조회
-		getUserTickets();
-
-		console.log('회사 아이디 변경 시 포인트 조회: ', companyInfo);
-
 	}, [companyInfo]);
 
 	return (
@@ -302,69 +207,8 @@ const Home = () => {
 					<WithLocalSvg asset={AppImages.iconTicket} width="20" height="20" style={{fill: '#333'}} />
 					<Text style={{fontSize: 14, fontWeight: '700', color: '#333' }}>나의 식권 목록</Text>
 				</View>
-				<ScrollView
-					style={styles.scrollView}
-					refreshControl={
-						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-					}
-				>
-					{
-						!userTickets.length
-						? <Text>포인트 충전 후 식권을 구매할 수 있습니다.</Text>
-						: userTickets.map((item: ResponseUserTicketModel, index: number) => {
-							return (
-								<TouchableOpacity key={index} style={{}} onPress={() => {
-									onTicketPress(item);
-								}}>
-									<View style={styles.shadowWrap}>
-										<View style={{...styles.menuButtonContainer, justifyContent: 'space-between'}}>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-												{/*@ts-ignore*/}
-												<WithLocalSvg asset={AppImages.iconQrcode} width="25" height="25" style={{fill: '#333', marginRight: 5}} />
-												<View>
-													<Text style={{ color: '#333',  fontSize: 14,  fontWeight: '700' }}>
-														{item.name}
-													</Text>
-													<Text style={{ color: '#333', fontSize: 12, fontWeight: '700' }}>
-														{addComma(item.price)}P
-													</Text>
-												</View>
-											</View>
-
-											<Text>Click <Text style={{fontStyle: 'italic'}}>!</Text></Text>
-										</View>
-									</View>
-								</TouchableOpacity>
-							)
-						})
-					}
-				</ScrollView>
+				<MyTicketList userInfo={userInfo} companyInfo={companyInfo} />
 			</View>
-			<Modal
-				animationType="slide"
-				transparent={true}
-				visible={modalVisible}
-				onRequestClose={() => {
-					setModalVisible(!modalVisible);
-				}}>
-				<View style={styles.centeredView}>
-					<View style={styles.modalView}>
-						<Text style={{...styles.modalText, fontWeight: '700'}}>QR 코드를 제시해주세요</Text>
-						<Text style={{...styles.modalText, marginBottom: 15}}>{selectedTicket.name} {addComma(selectedTicket.price)}P</Text>
-						<QRCode
-							value={selectedTicket.qr_id}
-							size={200}
-							color="black"
-							backgroundColor="white"
-						/>
-						<Pressable
-							style={[styles.button, styles.buttonClose]}
-							onPress={() => setModalVisible(!modalVisible)}>
-							<Icon name="close" size={20} color="white" />
-						</Pressable>
-					</View>
-				</View>
-			</Modal>
 		</SafeAreaView>
 	);
 };
@@ -375,17 +219,6 @@ const styles = StyleSheet.create({
 		shadowColor: 'rgba(0, 0, 0, 0.3)',
 		padding: 10,
 		borderRadius: 10,
-		// ...Platform.select({
-		// 	ios: {
-		// 		shadowColor: 'rgba(0, 0, 0, 0.3)',
-		// 		shadowOffset: {width: 0, height: 2},
-		// 		shadowOpacity: 0.3,
-		// 		shadowRadius: 4,
-		// 	},
-		// 	android: {
-		// 		elevation: 5,
-		// 	},
-		// }),
 		flexDirection: 'column',
 		gap: 10,
 		marginBottom: 15,
