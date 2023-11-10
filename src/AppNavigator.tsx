@@ -11,7 +11,7 @@ import BuyDetail from "./pages/ticket/buy-detail";
 import {useRecoilValue} from 'recoil';
 import {companyInfoState, userInfoState} from "./atoms/common-state";
 import SignUpView from "./pages/account/sign-up/sign-up";
-import {ResponseCompanyModel} from "./api/models/responses/company/response-company.model";
+import {ResponseCompanyDetailModel} from "./api/models/responses/company/response-company-detail.model";
 
 const Stack = createStackNavigator();
 
@@ -20,7 +20,7 @@ export default () => {
 	const userInfo: string = useRecoilValue(userInfoState);
 
 	// 회사 정보
-	const companyInfo: ResponseCompanyModel = useRecoilValue(companyInfoState);
+	const companyInfo: ResponseCompanyDetailModel = useRecoilValue(companyInfoState);
 
 	const renderView = () => {
 		// 유저 정보(uuid)가 존재하면 로그인 된 상태

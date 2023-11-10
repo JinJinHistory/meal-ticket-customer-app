@@ -6,14 +6,14 @@ import {hideLoading, showLoading} from "../../../util/action";
 import {theme} from "../../../assets/styles/common-styles";
 import {useRecoilState} from "recoil";
 import {pointListHistoryRefreshState, pointListHistoryState} from "../../../atoms/common-state";
-import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
 import {doGetPointList} from "../../../api/services/point-service";
 import {CommonListModel} from "../../../api/models/responses/common-list.model";
 import {ResponsePointHistoryListModel} from "../../../api/models/responses/point/response-point-history-list.model";
+import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 
 type Props = {
 	userInfo: string;
-	companyInfo: ResponseCompanyModel;
+	companyInfo: ResponseCompanyDetailModel;
 }
 const PointChargingHistoryList = ({ userInfo, companyInfo }: Props) => {
 

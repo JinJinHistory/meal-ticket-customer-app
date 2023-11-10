@@ -4,7 +4,7 @@ import {hideLoading, showLoading} from "../../util/action";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {theme} from "../../assets/styles/common-styles";
 import {ResponseCompanyModel} from "../../api/models/responses/company/response-company.model";
-import {doGetCompanyList} from "../../api/services/company-service";
+import {doGetCompany, doGetCompanyList} from "../../api/services/company-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useNavigation} from "@react-navigation/native";
 import {routes} from "../../routes";
@@ -17,6 +17,7 @@ import {
 	userTicketsRefreshState,
 	userTicketsState
 } from "../../atoms/common-state";
+import {ResponseCompanyDetailModel} from "../../api/models/responses/company/response-company-detail.model";
 
 export default function SelectCompany() {
 	const navigation = useNavigation<any>();
@@ -28,7 +29,7 @@ export default function SelectCompany() {
 	const [companyList, setCompanyList] = useState<Array<ResponseCompanyModel>>([]);
 
 	// 선택한 회사 정보
-	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>(companyInfo);
+	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>({id: companyInfo.id, name: companyInfo.name});
 
 	// 포인트 정보
 	const setPoint = useSetRecoilState(pointState);
@@ -74,6 +75,49 @@ export default function SelectCompany() {
 		}
 	};
 
+	// 회사 상세 조회
+	const getCompany = async () => {
+		// 로딩 표시
+		showLoading();
+
+		try {
+			// 회사 조회 API 엔드포인트 URL
+			const response: CommonResponseData<ResponseCompanyDetailModel> = await doGetCompany(selectedCompany.id);
+
+			// 응답에 성공했을 경우
+			if (response.status === 200) {
+				console.log('response: ', response);
+				// 데이터가 존재할 경우
+				if (response.data) {
+					console.log('데이터가 존재할 경우: ', response.data);
+
+					// selectedCompany 를 storage 에 저장
+					await AsyncStorage.setItem('selectedCompany', JSON.stringify(response.data));
+					setCompanyInfo(response.data);
+
+					// 업장 선택(변경) 시 업장 관련 정보 초기화
+					setPoint(0);
+					setUserTickets([]);
+					setUserTicketsRefresh(false);
+					setPointHistoryList([]);
+					setPointListHistoryRefresh(false);
+
+					// 홈으로 이동
+					navigation.navigate(routes.HOME);
+				}
+			} else {
+				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
+				Alert.alert('회사 조회 실패', response.message);
+			}
+		} catch (error) {
+			console.error('네트워크 오류', error);
+			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
+		} finally {
+			// 로딩 숨기기
+			hideLoading();
+		}
+	}
+
 	const submit = async () => {
 		if (!selectedCompany) {
 			Alert.alert('업장 선택', '업장을 선택해 주세요.');
@@ -90,19 +134,9 @@ export default function SelectCompany() {
 			hideLoading();
 			return;
 		}
-		// selectedCompany 를 storage 에 저장
-		await AsyncStorage.setItem('selectedCompany', JSON.stringify(selectedCompany));
-		setCompanyInfo(selectedCompany);
 
-		setPoint(0);
-		setUserTickets([]);
-		setUserTicketsRefresh(false);
-		setPointHistoryList([]);
-		setPointListHistoryRefresh(false);
-
-		// 로딩 숨기기
-		hideLoading();
-		navigation.navigate(routes.HOME);
+		// 현재 선택된 업장과 다른 업장을 선택했을 경우 해당 업장을 상세조회 한다
+		getCompany();
 	}
 
 	/**

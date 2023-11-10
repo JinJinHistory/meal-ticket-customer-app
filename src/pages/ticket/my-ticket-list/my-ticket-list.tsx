@@ -23,14 +23,11 @@ import {RequestGetPointModel} from "../../../api/models/requests/point/request-g
 import {theme} from "../../../assets/styles/common-styles";
 import {useRecoilState} from "recoil";
 import {userTicketsRefreshState, userTicketsState} from "../../../atoms/common-state";
-import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
-import {
-	panGestureHandlerCustomNativeProps
-} from "react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler";
+import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 
 type Props = {
 	userInfo: string;
-	companyInfo: ResponseCompanyModel;
+	companyInfo: ResponseCompanyDetailModel;
 }
 const MyTicketList = ({ userInfo, companyInfo }: Props) => {
 

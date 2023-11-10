@@ -1,4 +1,6 @@
 export class ResponseCompanyDetailModel {
+	// 회사 아이디
+	public id: string = '';
 	// 은행명
 	public bank_name: string = '';
 	// 계좌번호

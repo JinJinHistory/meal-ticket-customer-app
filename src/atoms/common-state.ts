@@ -2,6 +2,7 @@ import {atom, RecoilState, useResetRecoilState} from 'recoil';
 import {ResponseCompanyModel} from "../api/models/responses/company/response-company.model";
 import {ResponseUserTicketModel} from "../api/models/responses/ticket/response-user-ticket.model";
 import {ResponsePointHistoryListModel} from "../api/models/responses/point/response-point-history-list.model";
+import {ResponseCompanyDetailModel} from "../api/models/responses/company/response-company-detail.model";
 
 /**
  * 유저 로그인 정보
@@ -14,9 +15,10 @@ export const userInfoState: RecoilState<string> = atom({
 /**
  * 회사 정보
  */
-export const companyInfoState: RecoilState<ResponseCompanyModel> = atom({
+export const companyInfoState: RecoilState<ResponseCompanyDetailModel> = atom({
 	key: 'companyInfo',
-	default: { id: '', name: '' },
+	default: { id: '', bank_name: '', account_number: '', account_holder: '', name: '', phone_number: '' },
+
 });
 
 /**

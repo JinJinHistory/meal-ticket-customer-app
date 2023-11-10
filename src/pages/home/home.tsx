@@ -158,7 +158,7 @@ const Home = () => {
 						// storage 초기화
 						await AsyncStorage.clear();
 						setUserInfo('');
-						setCompanyInfo({id: '', name: ''});
+						setCompanyInfo({ id: '', bank_name: '', account_number: '', account_holder: '', name: '', phone_number: '' });
 						setPoint(0);
 						setUserTickets([]);
 						setUserTicketsRefresh(false);
@@ -208,7 +208,7 @@ const Home = () => {
 		showLoading();
 
 		try {
-			// 포이트 조회 요청 데이터 준비
+			// 포인트 조회 요청 데이터 준비
 			const queryData: {
 				skip: number,
 				take: number,

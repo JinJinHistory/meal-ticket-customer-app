@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import Header from "../../../components/header";
-import {Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Clipboard, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {commonStyles, theme} from "../../../assets/styles/common-styles";
 import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
-import {hideLoading, showLoading} from "../../../util/action";
+import {hideLoading, showLoading, showToast} from "../../../util/action";
 import {charging} from "../../../api/services/point-service";
 import {CommonResponse} from "../../../api/models/responses/common-response.model";
 import {RequestChargingPointModel} from "../../../api/models/requests/point/request-charging-point.model";
@@ -12,11 +12,8 @@ import {routes} from "../../../routes";
 import {useNavigation} from "@react-navigation/native";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {companyInfoState, pointListHistoryRefreshState, userInfoState} from "../../../atoms/common-state";
-import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
-import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
-import {doGetCompany} from "../../../api/services/company-service";
 import {addComma} from "../../../util/format";
-import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
+import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 
 const keyboardKeys: Array<number | string | undefined> = [
 	1, 2, 3, 4, 5, 6, 7, 8, 9, undefined, 0, 'remove'
@@ -29,53 +26,19 @@ const PointCharging = () => {
 	const userInfo: string = useRecoilValue(userInfoState);
 
 	// 회사 정보
-	const companyInfo: ResponseCompanyModel = useRecoilValue(companyInfoState);
+	const companyInfo: ResponseCompanyDetailModel = useRecoilValue(companyInfoState);
 
 	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
 	const setPointListHistoryRefresh = useSetRecoilState(pointListHistoryRefreshState);
 
 	const [inputValue, setInputValue] = useState<string>('');
 
-	// 회사 조회
-	const getCompany = async () => {
-		// 로딩 표시
-		showLoading();
+	// 클립보드에 복사하기
+	const copyToClipboard = (): void => {
+		Clipboard.setString(`예금주: ${companyInfo.account_holder}\n은행명: ${companyInfo.bank_name}\n계좌번호: ${companyInfo.account_number}`);
 
-		try {
-			// 회사 조회 API 엔드포인트 URL
-			const response: CommonResponseData<ResponseCompanyDetailModel> = await doGetCompany(companyInfo.id);
-
-			// 응답에 성공했을 경우
-			if (response.status === 200) {
-				console.log('response: ', response);
-				// 데이터가 존재할 경우
-				if (response.data) {
-					console.log('데이터가 존재할 경우: ', response.data);
-
-					// 성공 메시지 출력
-					Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 ${addComma(Number.parseInt(inputValue.replace(/[^0-9]/g, '')))}원을 입금 후\n관리자에게 연락주세요.\n\n업장명: ${response.data.name}\n입금은행: ${response.data.bank_name}\n계좌번호: ${response.data.account_number}\n예금주: ${response.data.account_holder}\n전화번호: ${response.data.phone_number}`, [
-						{
-							text: '확인',
-							onPress: () => {
-								console.log('확인');
-								// 포인트 충전 완료 후 메인 화면으로 이동
-								navigation.navigate(routes.HOME);
-							}
-						}
-					]);
-				}
-			} else {
-				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
-				Alert.alert('회사 조회 실패', response.message);
-			}
-		} catch (error) {
-			console.error('네트워크 오류', error);
-			Alert.alert('네트워크 오류', '서버와 통신 중 문제가 발생했습니다.');
-		} finally {
-			// 로딩 숨기기
-			hideLoading();
-		}
-	}
+		showToast('계좌 정보가 복사되었습니다.');
+	};
 
 	const handleKeyPress = (key: number | string | undefined): void => {
 		// 입력값에서 쉼표(,)와 숫자 이외의 문자를 제거합니다.
@@ -178,8 +141,17 @@ const PointCharging = () => {
 				// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보 변경
 				setPointListHistoryRefresh(true);
 
-				// 회사 상세 정보 조회
-				await getCompany();
+				// 성공 메시지 출력
+				Alert.alert('포인트 충전 요청', `포인트 충전 요청이 완료되었습니다.\n아래 계좌로 ${addComma(Number.parseInt(inputValue.replace(/[^0-9]/g, '')))}원을 입금 후\n관리자에게 연락주세요.\n\n업장명: ${companyInfo.name}\n입금은행: ${companyInfo.bank_name}\n계좌번호: ${companyInfo.account_number}\n예금주: ${companyInfo.account_holder}\n전화번호: ${companyInfo.phone_number}`, [
+					{
+						text: '확인',
+						onPress: () => {
+							console.log('확인');
+							// 포인트 충전 완료 후 메인 화면으로 이동
+							navigation.navigate(routes.HOME);
+						}
+					}
+				]);
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
 				Alert.alert('포인트 충전 실패', response.message);
@@ -211,6 +183,17 @@ const PointCharging = () => {
 					}
 				</View>
 			</View>
+
+			<View style={{
+				flexDirection: 'row',
+				justifyContent: 'center',
+				marginBottom: 10
+			}}>
+				<TouchableOpacity onPress={copyToClipboard}>
+					<Text style={{textDecorationLine: 'underline'}}>입금 계좌 정보 복사</Text>
+				</TouchableOpacity>
+			</View>
+
 			<View style={styles.keyboard}>
 				{
 					keyboardKeys.map((key: string | number | undefined, index: number) => renderKeyboard(key, index))
