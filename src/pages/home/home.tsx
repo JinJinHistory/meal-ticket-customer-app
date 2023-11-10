@@ -22,7 +22,7 @@ import {RequestGetPointModel} from "../../api/models/requests/point/request-get-
 import {doGetPoint, doGetPointList} from "../../api/services/point-service";
 import {addComma} from "../../util/format";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {useRecoilState, useResetRecoilState, useSetRecoilState} from 'recoil';
+import {useRecoilState, useSetRecoilState} from 'recoil';
 import {
 	companyInfoState,
 	pointListHistoryRefreshState,

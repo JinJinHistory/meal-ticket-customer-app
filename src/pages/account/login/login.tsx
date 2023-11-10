@@ -10,7 +10,7 @@ import {theme} from "../../../assets/styles/common-styles";
 import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
 import {useNavigation} from "@react-navigation/native";
-import {useRecoilState, useSetRecoilState} from "recoil";
+import {useSetRecoilState} from "recoil";
 import {userInfoState} from "../../../atoms/common-state";
 import {routes} from "../../../routes";
 

@@ -8,7 +8,7 @@ import PointCharging from "./pages/point/point-charging/point-charging";
 import SelectCompany from "./pages/select-company/select-company";
 import Home from "./pages/home/home";
 import BuyDetail from "./pages/ticket/buy-detail";
-import {useRecoilState, useRecoilValue} from 'recoil';
+import {useRecoilValue} from 'recoil';
 import {companyInfoState, userInfoState} from "./atoms/common-state";
 import SignUpView from "./pages/account/sign-up/sign-up";
 import {ResponseCompanyModel} from "./api/models/responses/company/response-company.model";
