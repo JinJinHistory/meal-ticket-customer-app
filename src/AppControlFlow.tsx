@@ -7,15 +7,15 @@ import {loadingRef, toastRef} from './util/action';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Loading from './components/Loading';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useRecoilState} from 'recoil';
+import {useSetRecoilState} from 'recoil';
 import {companyInfoState, userInfoState} from "./atoms/common-state";
 
 const AppControlFlow: React.FC = () => {
 	// 유저 로그인 정보
-	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+	const setUserInfo = useSetRecoilState(userInfoState);
 
 	// 회사 정보
-	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
+	const setCompanyInfo = useSetRecoilState(companyInfoState);
 
 	// 초기 토큰이 storage 에 존재하는지 확인 후 redux 에 저장
 	useEffect(() => {

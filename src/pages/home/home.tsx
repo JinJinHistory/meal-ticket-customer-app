@@ -22,7 +22,7 @@ import {RequestGetPointModel} from "../../api/models/requests/point/request-get-
 import {doGetPoint, doGetPointList} from "../../api/services/point-service";
 import {addComma} from "../../util/format";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {useRecoilState, useResetRecoilState} from 'recoil';
+import {useRecoilState, useResetRecoilState, useSetRecoilState} from 'recoil';
 import {
 	companyInfoState,
 	pointListHistoryRefreshState,
@@ -73,16 +73,16 @@ const Home = () => {
 	const [point, setPoint] = useRecoilState(pointState);
 
 	// 유저 티켓 목록 정보
-	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
+	const setUserTickets = useSetRecoilState(userTicketsState);
 
 	// 유저 티켓 목록 정보 리프레시 여부 정보
-	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
+	const setUserTicketsRefresh = useSetRecoilState(userTicketsRefreshState);
 
 	// 포인트 충전 요청/승인 목록 정보
-	const [pointHistoryList, setPointHistoryList] = useRecoilState(pointListHistoryState);
+	const setPointHistoryList = useSetRecoilState(pointListHistoryState);
 
 	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
-	const [pointListHistoryRefresh, setPointListHistoryRefresh] = useRecoilState(pointListHistoryRefreshState);
+	const setPointListHistoryRefresh = useSetRecoilState(pointListHistoryRefreshState);
 
 	// 포인트 조회
 	const getPoint = async () => {

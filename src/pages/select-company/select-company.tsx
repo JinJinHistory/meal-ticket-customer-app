@@ -8,11 +8,12 @@ import {doGetCompanyList} from "../../api/services/company-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useNavigation} from "@react-navigation/native";
 import {routes} from "../../routes";
-import {useRecoilState, useResetRecoilState} from "recoil";
+import {useRecoilState, useSetRecoilState} from "recoil";
 import {
-	companyInfoState, pointListHistoryRefreshState,
+	companyInfoState,
+	pointListHistoryRefreshState,
 	pointListHistoryState,
-	pointState, userInfoState,
+	pointState,
 	userTicketsRefreshState,
 	userTicketsState
 } from "../../atoms/common-state";
@@ -30,19 +31,19 @@ export default function SelectCompany() {
 	const [selectedCompany, setSelectedCompany] = useState<ResponseCompanyModel>(companyInfo);
 
 	// 포인트 정보
-	const [point, setPoint] = useRecoilState(pointState);
+	const setPoint = useSetRecoilState(pointState);
 
 	// 유저 티켓 목록 정보
-	const [userTickets, setUserTickets] = useRecoilState(userTicketsState);
+	const setUserTickets = useSetRecoilState(userTicketsState);
 
 	// 유저 티켓 목록 정보 리프레시 여부 정보
-	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
+	const setUserTicketsRefresh = useSetRecoilState(userTicketsRefreshState);
 
 	// 포인트 충전 요청/승인 목록 정보
-	const [pointHistoryList, setPointHistoryList] = useRecoilState(pointListHistoryState);
+	const setPointHistoryList = useSetRecoilState(pointListHistoryState);
 
 	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
-	const [pointListHistoryRefresh, setPointListHistoryRefresh] = useRecoilState(pointListHistoryRefreshState);
+	const setPointListHistoryRefresh = useSetRecoilState(pointListHistoryRefreshState);
 
 	// 회사 목록 조회
 	const getCompanyList = async () => {

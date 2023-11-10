@@ -11,23 +11,20 @@ import {doBuyCompanyTickets} from "../../api/services/ticket-service";
 import {RequestBuyTicketModel} from "../../api/models/requests/ticket/request-buy-ticket.model";
 import {CommonResponse} from "../../api/models/responses/common-response.model";
 import {useNavigation} from "@react-navigation/native";
-import {useRecoilState} from "recoil";
-import {companyInfoState, pointState, userInfoState, userTicketsRefreshState} from "../../atoms/common-state";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {pointState, userInfoState, userTicketsRefreshState} from "../../atoms/common-state";
 
 const BuyDetail = ({route}: any) => {
 	const navigation = useNavigation<any>();
 
 	// 유저 로그인 정보
-	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-
-	// 회사 정보
-	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
+	const userInfo: string = useRecoilValue(userInfoState);
 
 	// 포인트 정보
 	const [point, setPoint] = useRecoilState(pointState);
 
 	// 유저 티켓 목록 정보 리프레시 여부 정보
-	const [userTicketsRefresh, setUserTicketsRefresh] = useRecoilState(userTicketsRefreshState);
+	const setUserTicketsRefresh = useSetRecoilState(userTicketsRefreshState);
 
 	// 수량
 	const [count, setCount] = useState<number>(1);

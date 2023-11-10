@@ -10,17 +10,13 @@ import {CommonResponse} from "../../../api/models/responses/common-response.mode
 import {RequestChargingPointModel} from "../../../api/models/requests/point/request-charging-point.model";
 import {routes} from "../../../routes";
 import {useNavigation} from "@react-navigation/native";
-import {useRecoilState} from "recoil";
-import {
-	companyInfoState,
-	pointListHistoryRefreshState, pointListHistoryState,
-	userInfoState,
-	userTicketsRefreshState
-} from "../../../atoms/common-state";
+import {useRecoilValue, useSetRecoilState} from "recoil";
+import {companyInfoState, pointListHistoryRefreshState, userInfoState} from "../../../atoms/common-state";
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
 import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 import {doGetCompany} from "../../../api/services/company-service";
 import {addComma} from "../../../util/format";
+import {ResponseCompanyModel} from "../../../api/models/responses/company/response-company.model";
 
 const keyboardKeys: Array<number | string | undefined> = [
 	1, 2, 3, 4, 5, 6, 7, 8, 9, undefined, 0, 'remove'
@@ -30,13 +26,13 @@ const PointCharging = () => {
 	const navigation = useNavigation<any>();
 
 	// 유저 로그인 정보
-	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+	const userInfo: string = useRecoilValue(userInfoState);
 
 	// 회사 정보
-	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
+	const companyInfo: ResponseCompanyModel = useRecoilValue(companyInfoState);
 
 	// 포인트 충전 요청/승인 목록 정보 리프레시 여부 정보
-	const [pointListHistoryRefresh, setPointListHistoryRefresh] = useRecoilState(pointListHistoryRefreshState);
+	const setPointListHistoryRefresh = useSetRecoilState(pointListHistoryRefreshState);
 
 	const [inputValue, setInputValue] = useState<string>('');
 

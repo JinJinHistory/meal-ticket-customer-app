@@ -8,18 +8,19 @@ import PointCharging from "./pages/point/point-charging/point-charging";
 import SelectCompany from "./pages/select-company/select-company";
 import Home from "./pages/home/home";
 import BuyDetail from "./pages/ticket/buy-detail";
-import {useRecoilState} from 'recoil';
+import {useRecoilState, useRecoilValue} from 'recoil';
 import {companyInfoState, userInfoState} from "./atoms/common-state";
 import SignUpView from "./pages/account/sign-up/sign-up";
+import {ResponseCompanyModel} from "./api/models/responses/company/response-company.model";
 
 const Stack = createStackNavigator();
 
 export default () => {
 	// 유저 로그인 정보
-	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+	const userInfo: string = useRecoilValue(userInfoState);
 
 	// 회사 정보
-	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
+	const companyInfo: ResponseCompanyModel = useRecoilValue(companyInfoState);
 
 	const renderView = () => {
 		// 유저 정보(uuid)가 존재하면 로그인 된 상태

@@ -10,7 +10,7 @@ import {theme} from "../../../assets/styles/common-styles";
 import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
 import {useNavigation} from "@react-navigation/native";
-import {useRecoilState} from "recoil";
+import {useRecoilState, useSetRecoilState} from "recoil";
 import {userInfoState} from "../../../atoms/common-state";
 import {routes} from "../../../routes";
 
@@ -18,7 +18,7 @@ export default function LoginView() {
 	const navigation = useNavigation<any>();
 
 	// 유저 로그인 정보
-	const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+	const setUserInfo = useSetRecoilState(userInfoState);
 
 	// 아이디
 	const [email, setEmail] = useState<string>('');

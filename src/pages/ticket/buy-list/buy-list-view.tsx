@@ -6,12 +6,12 @@ import Header from "../../../components/header";
 import {doGetCompanyTickets} from "../../../api/services/ticket-service";
 import {CommonResponseData} from "../../../api/models/responses/common-response-data.model";
 import {ResponseCompanyTicketModel} from "../../../api/models/responses/ticket/response-company-ticket.model";
-import {useRecoilState} from "recoil";
+import {useRecoilValue} from "recoil";
 import {companyInfoState} from "../../../atoms/common-state";
 
 const BuyListView = () => {
 	// 회사 정보
-	const [companyInfo, setCompanyInfo] = useRecoilState(companyInfoState);
+	const companyInfo = useRecoilValue(companyInfoState);
 
 	// 리프레시 상태
 	const [refreshing, setRefreshing] = React.useState(false);
