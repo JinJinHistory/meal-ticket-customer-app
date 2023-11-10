@@ -1,5 +1,4 @@
-import {atom, RecoilState, useResetRecoilState} from 'recoil';
-import {ResponseCompanyModel} from "../api/models/responses/company/response-company.model";
+import {atom, RecoilState} from 'recoil';
 import {ResponseUserTicketModel} from "../api/models/responses/ticket/response-user-ticket.model";
 import {ResponsePointHistoryListModel} from "../api/models/responses/point/response-point-history-list.model";
 import {ResponseCompanyDetailModel} from "../api/models/responses/company/response-company-detail.model";

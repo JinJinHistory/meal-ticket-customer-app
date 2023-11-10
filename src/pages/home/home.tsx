@@ -55,7 +55,7 @@ const Home = () => {
 	);
 
 	const SecondRoute = () => (
-		<PointChargingHistoryList userInfo={userInfo} companyInfo={companyInfo} />
+		<PointChargingHistoryList companyInfo={companyInfo} />
 	);
 
 	const renderScene = SceneMap({

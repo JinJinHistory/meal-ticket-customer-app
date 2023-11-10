@@ -12,10 +12,9 @@ import {ResponsePointHistoryListModel} from "../../../api/models/responses/point
 import {ResponseCompanyDetailModel} from "../../../api/models/responses/company/response-company-detail.model";
 
 type Props = {
-	userInfo: string;
 	companyInfo: ResponseCompanyDetailModel;
 }
-const PointChargingHistoryList = ({ userInfo, companyInfo }: Props) => {
+const PointChargingHistoryList = ({ companyInfo }: Props) => {
 
 	// 포인트 충전 요청/승인 목록 정보
 	const [pointHistoryList, setPointHistoryList] = useRecoilState(pointListHistoryState);
