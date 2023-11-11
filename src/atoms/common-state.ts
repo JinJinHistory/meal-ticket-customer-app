@@ -17,7 +17,14 @@ export const userInfoState: RecoilState<string> = atom({
 export const companyInfoState: RecoilState<ResponseCompanyDetailModel> = atom({
 	key: 'companyInfo',
 	default: { id: '', bank_name: '', account_number: '', account_holder: '', name: '', phone_number: '' },
+});
 
+/**
+ * 회사 uuid
+ */
+export const companyIdNameState: RecoilState<{id: string, name: string}> = atom({
+	key: 'companyIdName',
+	default: {id: '', name: ''},
 });
 
 /**

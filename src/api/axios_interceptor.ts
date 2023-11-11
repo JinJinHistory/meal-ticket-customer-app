@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const instance = axios.create({
 	// Todo: 추후 env 파일로 분리
-	baseURL: 'http://192.168.35.52:8001/api', // API 엔드포인트 기본 URL 설정
+	// baseURL: 'http://192.168.35.52:8001/api', // API 엔드포인트 기본 URL 설정
+	baseURL: 'http://172.30.1.94:8001/api', // API 엔드포인트 기본 URL 설정
 	validateStatus: function (status) {
 		return status >= 200 && status < 500; // 200-499 사이의 상태 코드를 유효한 상태로 처리
 	},

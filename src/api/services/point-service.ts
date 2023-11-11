@@ -6,6 +6,7 @@ import {CommonResponseData} from "../models/responses/common-response-data.model
 import {RequestGetPointModel} from "../models/requests/point/request-get-point.model";
 import {CommonListModel} from "../models/responses/common-list.model";
 import {ResponsePointHistoryListModel} from "../models/responses/point/response-point-history-list.model";
+import {RequestPointApprovalModel} from "../models/requests/point/request-point-approval.model";
 
 const POINT_URL: string = '/point';
 
@@ -13,6 +14,16 @@ const POINT_URL: string = '/point';
 export const charging = async (request: RequestChargingPointModel): Promise<CommonResponse> => {
 	try {
 		const response: AxiosResponse<CommonResponse> = await instance.post<CommonResponse>(`${POINT_URL}/charging`, request);
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};
+
+// 포인트 충전 승인
+export const doApproval = async (request: RequestPointApprovalModel): Promise<CommonResponse> => {
+	try {
+		const response: AxiosResponse<CommonResponse> = await instance.post<CommonResponse>(`${POINT_URL}/approval`, request);
 		return response.data;
 	} catch (error) {
 		throw error;

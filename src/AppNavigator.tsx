@@ -9,9 +9,11 @@ import SelectCompany from "./pages/select-company/select-company";
 import Home from "./pages/home/home";
 import BuyDetail from "./pages/ticket/buy-detail";
 import {useRecoilValue} from 'recoil';
-import {companyInfoState, userInfoState} from "./atoms/common-state";
+import {companyInfoState, companyIdNameState, userInfoState} from "./atoms/common-state";
 import SignUpView from "./pages/account/sign-up/sign-up";
 import {ResponseCompanyDetailModel} from "./api/models/responses/company/response-company-detail.model";
+import {showToast} from "./util/action";
+import CompanyHome from "./pages/home/company-home";
 
 const Stack = createStackNavigator();
 
@@ -21,6 +23,9 @@ export default () => {
 
 	// 회사 정보
 	const companyInfo: ResponseCompanyDetailModel = useRecoilValue(companyInfoState);
+
+	// 회사 uuid 정보 (해당 값이 존재하면 관리자)
+	const companyIdName: {id: string, name: string} = useRecoilValue(companyIdNameState);
 
 	const renderView = () => {
 		// 유저 정보(uuid)가 존재하면 로그인 된 상태
@@ -38,6 +43,10 @@ export default () => {
 					</>
 				);
 			}
+		}
+		else if (companyIdName.id) {
+			showToast('관리자!');
+			return <Stack.Screen name={routes.COMPANY_HOME} component={CompanyHome}/>;
 		}
 		// 유저 uuid가 존재하지 않으면 로그인 되지 않은 상태
 		else {

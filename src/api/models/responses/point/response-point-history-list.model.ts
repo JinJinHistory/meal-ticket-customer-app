@@ -13,4 +13,8 @@ export class ResponsePointHistoryListModel {
 	public regDate: Date | null = null;
 	// 수정일
 	public modDate: Date | null = null;
+	// 유저 이름
+	public name: string = '';
+	// 유저 핸드폰 번호
+	public phone_number: string = '';
 }

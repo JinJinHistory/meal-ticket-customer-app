@@ -24,6 +24,11 @@ const AppControlFlow: React.FC = () => {
 			setUserInfo(userUuid??'');
 		});
 
+		AsyncStorage.getItem('companyUuid').then((companyUuid): void => {
+			console.log('초기 실행 시 회사 uuid 확인: ', companyUuid);
+			setUserInfo(companyUuid??'');
+		});
+
 		AsyncStorage.getItem('selectedCompany').then((selectedCompany): void => {
 			console.log('초기 실행 시 선택된 회사 정보 확인: ', selectedCompany ? JSON.parse(selectedCompany) : { id: '', bank_name: '', account_number: '', account_holder: '', name: '', phone_number: '' });
 			setCompanyInfo(selectedCompany ? JSON.parse(selectedCompany) : { id: '', bank_name: '', account_number: '', account_holder: '', name: '', phone_number: '' });

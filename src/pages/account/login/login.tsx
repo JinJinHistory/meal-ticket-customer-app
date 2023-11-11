@@ -11,7 +11,7 @@ import {AppImages} from "../../../assets";
 import {WithLocalSvg} from "react-native-svg";
 import {useNavigation} from "@react-navigation/native";
 import {useSetRecoilState} from "recoil";
-import {userInfoState} from "../../../atoms/common-state";
+import {companyIdNameState, userInfoState} from "../../../atoms/common-state";
 import {routes} from "../../../routes";
 
 export default function LoginView() {
@@ -19,6 +19,9 @@ export default function LoginView() {
 
 	// 유저 로그인 정보
 	const setUserInfo = useSetRecoilState(userInfoState);
+
+	// 회사 uuid 정보
+	const setCompanyUuidInfo = useSetRecoilState(companyIdNameState);
 
 	// 아이디
 	const [email, setEmail] = useState<string>('');
@@ -55,9 +58,19 @@ export default function LoginView() {
 			if (response.status === 200) {
 				// 데이터가 존재할 경우
 				if (response.data) {
-					console.log('[로그인 성공]: ', response.data);
-					await AsyncStorage.setItem('userUuid', response.data.uuid);
-					setUserInfo(response.data.uuid);
+					// 유저 타입인 경우
+					if (response.data.type === 'user') {
+						await AsyncStorage.setItem('userUuid', response.data.uuid);
+						setUserInfo(response.data.uuid);
+					}
+					// 관리자 타입인 경우
+					else {
+						await AsyncStorage.setItem('companyUuid', response.data.uuid);
+						setCompanyUuidInfo({
+							id: response.data.uuid,
+							name: response.data.name
+						});
+					}
 				}
 			} else {
 				// 200 상태 코드가 아닌 경우 (예: 400, 401 등)
