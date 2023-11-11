@@ -13,10 +13,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {hideLoading, showLoading} from "../../util/action";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {routes} from "../../routes";
 import {commonStyles, theme} from "../../assets/styles/common-styles";
-import {AppImages} from "../../assets";
-import {WithLocalSvg} from "react-native-svg";
 import StatusBarSize from "../../components/status-bar-size";
 import {CommonResponseData} from "../../api/models/responses/common-response-data.model";
 import {doApproval, doGetPointList} from "../../api/services/point-service";
@@ -26,9 +23,7 @@ import {companyIdNameState, pointListHistoryRefreshState, pointListHistoryState}
 import {CommonListModel} from "../../api/models/responses/common-list.model";
 import {ResponsePointHistoryListModel} from "../../api/models/responses/point/response-point-history-list.model";
 import {addComma, momentFormat} from "../../util/format";
-import {RequestBuyTicketModel} from "../../api/models/requests/ticket/request-buy-ticket.model";
 import {CommonResponse} from "../../api/models/responses/common-response.model";
-import {doBuyCompanyTickets} from "../../api/services/ticket-service";
 import {RequestPointApprovalModel} from "../../api/models/requests/point/request-point-approval.model";
 
 const CompanyHome = () => {
