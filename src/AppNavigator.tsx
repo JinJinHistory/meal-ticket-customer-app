@@ -9,9 +9,8 @@ import SelectCompany from "./pages/select-company/select-company";
 import Home from "./pages/home/home";
 import BuyDetail from "./pages/ticket/buy-detail";
 import {useRecoilValue} from 'recoil';
-import {companyInfoState, companyIdNameState, userInfoState} from "./atoms/common-state";
+import {companyIdNameState, userInfoState} from "./atoms/common-state";
 import SignUpView from "./pages/account/sign-up/sign-up";
-import {ResponseCompanyDetailModel} from "./api/models/responses/company/response-company-detail.model";
 import {showToast} from "./util/action";
 import CompanyHome from "./pages/home/company-home";
 
@@ -21,28 +20,18 @@ export default () => {
 	// 유저 로그인 정보
 	const userInfo: string = useRecoilValue(userInfoState);
 
-	// 회사 정보
-	const companyInfo: ResponseCompanyDetailModel = useRecoilValue(companyInfoState);
-
 	// 회사 uuid 정보 (해당 값이 존재하면 관리자)
 	const companyIdName: {id: string, name: string} = useRecoilValue(companyIdNameState);
 
 	const renderView = () => {
 		// 유저 정보(uuid)가 존재하면 로그인 된 상태
 		if (userInfo) {
-			// 회사 uuid가 존재하지 않으면 회사 선택 화면으로 이동
-			if (!companyInfo.id) {
-				return <Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>;
-			}
-			// 회사 uuid가 존재하면 탭 화면으로 이동
-			else {
-				return (
-					<>
-						<Stack.Screen name={routes.HOME} component={Home}/>
-						<Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>
-					</>
-				);
-			}
+			return (
+				<>
+					<Stack.Screen name={routes.HOME} component={Home}/>
+					<Stack.Screen name={routes.SELECT_COMPANY} component={SelectCompany}/>
+				</>
+			);
 		}
 		else if (companyIdName.id) {
 			showToast('관리자!');

@@ -313,16 +313,12 @@ const Home = () => {
 			<View style={{...commonStyles.pageLayout, flex: 1}}>
 				<StatusBarSize/>
 				<View style={styles.companyCard}>
-					<TouchableOpacity
+					<View
 						style={styles.headerIconArea}
-						onPress={() => {
-							// 회사 선택 페이지를 위에 쌓는다
-							navigation.push(routes.SELECT_COMPANY);
-						}}
 					>
 						<WithLocalSvg asset={AppImages.iconMarker} width="15" height="15"/>
 						<Text style={styles.companyCardText}>{companyInfo.name}</Text>
-					</TouchableOpacity>
+					</View>
 					<TouchableOpacity
 						onPress={onLogoutPress}
 					>
@@ -364,7 +360,7 @@ const Home = () => {
 							]}
 						>
 							<WithLocalSvg asset={AppImages.iconShoppingBagAdd} width="17" height="17"/>
-							<Text style={styles.createReviewButtonText}>식권 구매</Text>
+							<Text style={styles.createReviewButtonText}>식사하기</Text>
 						</TouchableOpacity>
 					</View>
 				</View>

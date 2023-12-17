@@ -162,7 +162,7 @@ const MyTicketList = ({ userInfo, companyInfo }: Props) => {
 				}}>
 				<View style={styles.centeredView}>
 					<View style={styles.modalView}>
-						<Text style={{...styles.modalText, fontWeight: '700'}}>QR 코드를 제시해주세요</Text>
+						<Text style={{...styles.modalText, fontWeight: '700'}}>QR 코드를 제시해 주세요</Text>
 						<Text style={{...styles.modalText, marginBottom: 15}}>{selectedTicket.name} {addComma(selectedTicket.price)}P</Text>
 						<QRCode
 							value={selectedTicket.qr_id}

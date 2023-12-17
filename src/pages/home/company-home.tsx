@@ -245,6 +245,11 @@ const CompanyHome = () => {
 							: pointHistoryList.map((item: ResponsePointHistoryListModel, index: number) => {
 								return (
 									<TouchableOpacity key={index} onPress={() => {
+										if (item.type === 'Approval') {
+											Alert.alert('포인트 충전 승인', '이미 승인된 포인트 입니다.');
+											return;
+										}
+
 										Alert.alert('포인트 충전 승인', '포인트 충전 승인 하시겠습니까?', [
 											{
 												text: '확인',
@@ -252,10 +257,18 @@ const CompanyHome = () => {
 													// 포인트 충전 승인
 													approval(item.uuid, item.company_uuid);
 												}
-											}
+											},
+											{
+												text: '취소',
+												onPress: () => null,
+												style: 'cancel',
+											},
 										]);
 									}}>
-										<View style={styles.shadowWrap}>
+										<View style={{
+											...styles.shadowWrap,
+											backgroundColor: item.type === 'Approval' ? '#ddd' : '#fff'
+										}}>
 											<View style={{...styles.menuButtonContainer, justifyContent: 'space-between'}}>
 												<View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
 													<View>
